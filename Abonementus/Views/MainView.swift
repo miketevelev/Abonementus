@@ -188,6 +188,9 @@ struct MainView: SwiftUI.View {
                 clients: clientVM.clients,
                 onDelete: { id in
                     lessonVM.deleteLesson(id: id)
+                },
+                onUpdateLessonTime: { lessonId, newDate in
+                    lessonVM.updateLessonCompletionTime(lessonId: lessonId, newConductedAt: newDate)
                 }
             )
         }

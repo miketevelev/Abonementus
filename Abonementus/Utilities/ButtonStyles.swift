@@ -49,3 +49,13 @@ struct BrownButtonStyle: ButtonStyle {
             .scaleEffect(configuration.isPressed ? 0.95 : 1)
     }
 }
+
+struct GrayButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .foregroundColor(.white)
+            .background(Color.gray)
+            .cornerRadius(6)
+            .scaleEffect(configuration.isPressed ? 0.95 : 1)
+    }
+}

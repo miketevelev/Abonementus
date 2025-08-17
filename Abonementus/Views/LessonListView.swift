@@ -4,9 +4,11 @@ struct LessonListView: View {
     let lessons: [Lesson]
     let clients: [Client]
     let onDelete: (Int64) -> Void
+    let onUpdateLessonTime: (Int64, Date) -> Void
     
     @Environment(\.presentationMode) var presentationMode
     @State private var selectedYear: Int = Calendar.current.component(.year, from: Date())
+    @State private var selectedLessonForEdit: Lesson?
     
     var body: some View {
             VStack(spacing: 0) {
@@ -63,11 +65,30 @@ struct LessonListView: View {
                     }
                     
                     // Completed lessons
-                    Section(header: Text("Завершенные уроки")) {
+                    Section(header: HStack {
+                        Text("Завершенные уроки")
+                        Spacer()
+                        Text("Нажмите для редактирования времени")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }) {
                         ForEach(filteredCompletedLessons, id: \.id) { lesson in
                             lessonRow(for: lesson)
                                 .background(Color.gray.opacity(0.1))
                                 .cornerRadius(6)
+                                .onTapGesture {
+                                    selectedLessonForEdit = lesson
+                                }
+                                .contentShape(Rectangle())
+                                .overlay(
+                                    HStack {
+                                        Spacer()
+                                        Image(systemName: "pencil.circle")
+                                            .foregroundColor(.blue)
+                                            .font(.caption)
+                                    }
+                                    .padding(.trailing, 8)
+                                )
                         }
                     }
                 }
@@ -79,6 +100,20 @@ struct LessonListView: View {
                 #endif
             }
             .frame(minWidth: 600, minHeight: 500)
+            .sheet(item: $selectedLessonForEdit) { lesson in
+                let client = clients.first { $0.id == lesson.clientId }
+                LessonEditView(
+                    lesson: lesson,
+                    client: client,
+                    onSave: { newDate in
+                        onUpdateLessonTime(lesson.id, newDate)
+                        selectedLessonForEdit = nil
+                    },
+                    onCancel: {
+                        selectedLessonForEdit = nil
+                    }
+                )
+            }
         }
     
     private var activeLessons: [Lesson] {
@@ -207,7 +242,8 @@ struct LessonListView_Previews: PreviewProvider {
         return LessonListView(
             lessons: sampleLessons,
             clients: [sampleClient],
-            onDelete: { _ in }
+            onDelete: { _ in },
+            onUpdateLessonTime: { _, _ in }
         )
     }
 }

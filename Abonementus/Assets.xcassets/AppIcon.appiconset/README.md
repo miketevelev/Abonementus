@@ -27,3 +27,4 @@ The app icon represents subscription and lesson management with:
 - White calendar element
 - Green checkmarks for completed lessons
 - Professional subscription management theme
+

@@ -207,6 +207,22 @@ class LessonViewModel: ObservableObject {
         }
     }
     
+    func updateLessonCompletionTime(lessonId: Int64, newConductedAt: Date) {
+        guard let db = db else { return }
+        
+        do {
+            let lessonToUpdate = Lesson.table.filter(Lesson.id == lessonId)
+            try db.run(lessonToUpdate.update(
+                Lesson.conductedAt <- newConductedAt
+            ))
+            
+            print("Lesson \(lessonId) completion time updated to \(newConductedAt)")
+            fetchLessons()
+        } catch {
+            print("Error updating lesson completion time: \(error)")
+        }
+    }
+    
     func calculateCompletedAmount() -> Double {
         let currentMonth = Calendar.current.component(.month, from: Date())
         let currentYear = Calendar.current.component(.year, from: Date())
