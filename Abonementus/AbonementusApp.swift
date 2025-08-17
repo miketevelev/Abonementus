@@ -1,17 +1,12 @@
-//
-//  AbonementusApp.swift
-//  Abonementus
-//
-//  Created by Mike Tevelev on 16.08.2025.
-//
-
 import SwiftUI
 
 @main
 struct AbonementusApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainView()
+                .frame(minWidth: 1000, minHeight: 600)
         }
+        .windowStyle(HiddenTitleBarWindowStyle())
     }
 }
