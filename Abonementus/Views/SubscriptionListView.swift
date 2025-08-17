@@ -8,6 +8,8 @@ struct SubscriptionListView: View {
     
     @Environment(\.presentationMode) var presentationMode
     @State private var selectedYear: Int = Calendar.current.component(.year, from: Date())
+    @State private var showDeleteConfirmation = false
+    @State private var subscriptionToDelete: Int64?
     
     var body: some View {
             VStack(spacing: 0) {
@@ -32,7 +34,7 @@ struct SubscriptionListView: View {
                         if availableYears.count > 1 {
                             Picker("Год", selection: $selectedYear) {
                                 ForEach(availableYears, id: \.self) { year in
-                                    Text("\(year)").tag(year)
+                                    Text(String(year)).tag(year)
                                 }
                             }
                             .pickerStyle(MenuPickerStyle())
@@ -76,6 +78,23 @@ struct SubscriptionListView: View {
                 #endif
             }
             .frame(minWidth: 700, minHeight: 500)
+            .alert("Подтверждение удаления", isPresented: $showDeleteConfirmation) {
+                Button("Отмена", role: .cancel) { }
+                Button("Удалить", role: .destructive) {
+                    if let subscriptionId = subscriptionToDelete {
+                        onDelete(subscriptionId)
+                        subscriptionToDelete = nil
+                    }
+                }
+            } message: {
+                if let subscriptionId = subscriptionToDelete,
+                   let subscription = subscriptions.first(where: { $0.id == subscriptionId }),
+                   let client = clients.first(where: { $0.id == subscription.clientId }) {
+                    Text("Вы уверены, что хотите удалить абонемент для клиента \(client.fullName)?")
+                } else {
+                    Text("Вы уверены, что хотите удалить абонемент?")
+                }
+            }
         }
     
     private var activeSubscriptions: [Subscription] {
@@ -164,9 +183,16 @@ struct SubscriptionListView: View {
             HStack {
                 Spacer()
                 
-                Button(action: { onDelete(subscription.id) }) {
-                    HStack {
+                Button(action: {
+                    subscriptionToDelete = subscription.id
+                    showDeleteConfirmation = true
+                }) {
+                    HStack(spacing: 8) {
                         Image(systemName: "trash")
+                            .font(.system(size: 14))
+                            .padding(6)
+                            .background(Color.red.opacity(0.2))
+                            .clipShape(RoundedRectangle(cornerRadius: 6))
                         Text("Удалить абонемент")
                     }
                     .foregroundColor(.red)
@@ -174,6 +200,7 @@ struct SubscriptionListView: View {
                 .buttonStyle(PlainButtonStyle())
             }
         }
+        .padding(.horizontal, 20)
         .padding(.vertical, 8)
         .background(getStatusColor(for: subscription).opacity(0.05))
         .cornerRadius(6)

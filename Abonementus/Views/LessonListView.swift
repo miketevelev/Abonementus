@@ -9,6 +9,8 @@ struct LessonListView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var selectedYear: Int = Calendar.current.component(.year, from: Date())
     @State private var selectedLessonForEdit: Lesson?
+    @State private var showDeleteConfirmation = false
+    @State private var lessonToDelete: Int64?
     
     var body: some View {
             VStack(spacing: 0) {
@@ -33,7 +35,7 @@ struct LessonListView: View {
                         if availableYears.count > 1 {
                             Picker("Год", selection: $selectedYear) {
                                 ForEach(availableYears, id: \.self) { year in
-                                    Text("\(year)").tag(year)
+                                    Text(String(year)).tag(year)
                                 }
                             }
                             .pickerStyle(MenuPickerStyle())
@@ -81,11 +83,14 @@ struct LessonListView: View {
                                 }
                                 .contentShape(Rectangle())
                                 .overlay(
-                                    HStack {
+                                    HStack(spacing: 8) {
                                         Spacer()
                                         Image(systemName: "pencil.circle")
                                             .foregroundColor(.blue)
-                                            .font(.caption)
+                                            .font(.system(size: 14))
+                                            .padding(6)
+                                            .background(Color.blue.opacity(0.2))
+                                            .clipShape(RoundedRectangle(cornerRadius: 6))
                                     }
                                     .padding(.trailing, 8)
                                 )
@@ -113,6 +118,23 @@ struct LessonListView: View {
                         selectedLessonForEdit = nil
                     }
                 )
+            }
+            .alert("Подтверждение удаления", isPresented: $showDeleteConfirmation) {
+                Button("Отмена", role: .cancel) { }
+                Button("Удалить", role: .destructive) {
+                    if let lessonId = lessonToDelete {
+                        onDelete(lessonId)
+                        lessonToDelete = nil
+                    }
+                }
+            } message: {
+                if let lessonId = lessonToDelete,
+                   let lesson = lessons.first(where: { $0.id == lessonId }),
+                   let client = clients.first(where: { $0.id == lesson.clientId }) {
+                    Text("Вы уверены, что хотите удалить урок для клиента \(client.fullName)?")
+                } else {
+                    Text("Вы уверены, что хотите удалить урок?")
+                }
             }
         }
     
@@ -188,15 +210,28 @@ struct LessonListView: View {
             
             // Delete button (only for single lessons)
             if lesson.subscriptionId == nil {
-                Button(action: { onDelete(lesson.id) }) {
+                Button(action: {
+                    lessonToDelete = lesson.id
+                    showDeleteConfirmation = true
+                }) {
                     Image(systemName: "trash")
                         .foregroundColor(.red)
+                        .font(.system(size: 14))
+                        .padding(6)
+                        .background(Color.red.opacity(0.2))
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
                 }
                 .buttonStyle(PlainButtonStyle())
+                .padding(.trailing, 20)
             } else {
-                Text(" ")
+                // Empty space to maintain alignment
+                Rectangle()
+                    .fill(Color.clear)
+                    .frame(width: 28, height: 28)
+                    .padding(.trailing, 20)
             }
         }
+        .padding(.horizontal, 20)
         .padding(.vertical, 8)
     }
 }

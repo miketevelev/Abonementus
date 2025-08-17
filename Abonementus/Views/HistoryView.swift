@@ -44,6 +44,9 @@ struct HistoryView: View {
                     Image(systemName: "chart.line.uptrend.xyaxis")
                         .font(.system(size: 40))
                         .foregroundColor(.secondary)
+                        .padding(12)
+                        .background(Color.secondary.opacity(0.2))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
                     
                     Text("Нет данных о доходах")
                         .font(.headline)
@@ -63,7 +66,7 @@ struct HistoryView: View {
                             VStack(spacing: 0) {
                                 // Year header
                                 HStack {
-                                    Text("\(yearData.year)")
+                                    Text(String(yearData.year))
                                         .font(.title2)
                                         .fontWeight(.bold)
                                         .foregroundColor(.primary)

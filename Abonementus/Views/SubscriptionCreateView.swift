@@ -65,9 +65,13 @@ struct SubscriptionCreateView: View {
                 }
                 
                 Section(header: Text("Информация"), footer: Text("Вы можете создать абонемент с любой датой начала. Абонементы старше 30 дней автоматически отмечены как истекшие.")) {
-                    HStack {
+                    HStack(spacing: 8) {
                         Image(systemName: "info.circle")
                             .foregroundColor(.blue)
+                            .font(.system(size: 14))
+                            .padding(6)
+                            .background(Color.blue.opacity(0.2))
+                            .clipShape(RoundedRectangle(cornerRadius: 6))
                         Text("Ретроактивное создание")
                             .foregroundColor(.secondary)
                     }
@@ -111,7 +115,7 @@ struct SubscriptionCreateView: View {
             }
             .padding(.horizontal, 20)
         }
-        .frame(minWidth: 450, minHeight: 380)
+        .frame(minWidth: 450, minHeight: 400)
         .alert(isPresented: $showError) {
             Alert(title: Text("Ошибка"), message: Text(errorMessage), dismissButton: .default(Text("OK")))
         }

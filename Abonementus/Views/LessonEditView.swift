@@ -98,6 +98,10 @@ struct LessonEditView: View {
                     HStack {
                         Image(systemName: "info.circle")
                             .foregroundColor(.blue)
+                            .font(.system(size: 14))
+                            .padding(6)
+                            .background(Color.blue.opacity(0.2))
+                            .clipShape(RoundedRectangle(cornerRadius: 6))
                         Text("Редактирование времени")
                             .foregroundColor(.secondary)
                     }

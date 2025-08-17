@@ -59,9 +59,13 @@ struct LessonCreateView: View {
                 }
                 
                 Section(header: Text("Информация"), footer: Text("Урок будет автоматически отмечен как проведенный и включен в месячную статистику. Вы можете выбрать любую дату в прошлом для ретроактивного создания.")) {
-                    HStack {
+                    HStack(spacing: 8) {
                         Image(systemName: "info.circle")
                             .foregroundColor(.blue)
+                            .font(.system(size: 14))
+                            .padding(6)
+                            .background(Color.blue.opacity(0.2))
+                            .clipShape(RoundedRectangle(cornerRadius: 6))
                         Text("Ретроактивное создание")
                             .foregroundColor(.secondary)
                     }
@@ -77,7 +81,7 @@ struct LessonCreateView: View {
             }
             .padding(.horizontal, 20)
         }
-        .frame(minWidth: 400, minHeight: 300)
+        .frame(minWidth: 400, minHeight: 350)
         .alert(isPresented: $showError) {
             Alert(title: Text("Ошибка"), message: Text(errorMessage), dismissButton: .default(Text("OK")))
         }

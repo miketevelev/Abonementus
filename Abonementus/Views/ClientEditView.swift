@@ -4,6 +4,7 @@ struct ClientEditView: View {
     @State var client: Client
     @State private var showError = false
     @State private var errorMessage = ""
+    @State private var showDeleteConfirmation = false
     let onSave: (Client) -> Void
     let onDelete: () -> Void
     
@@ -56,12 +57,11 @@ struct ClientEditView: View {
                         Label("Сохранить", systemImage: "checkmark.circle")
                             .padding(8)
                     }
-                    .buttonStyle(BlueButtonStyle())
+                    .buttonStyle(GreenButtonStyle())
                     
                     if client.id != 0 {
                         Button(action: {
-                            onDelete()
-                            presentationMode.wrappedValue.dismiss()
+                            showDeleteConfirmation = true
                         }) {
                             Label("Удалить", systemImage: "trash")
                                 .padding(8)
@@ -111,6 +111,15 @@ struct ClientEditView: View {
         .frame(minWidth: 500, minHeight: 200)
         .alert(isPresented: $showError) {
             Alert(title: Text("Ошибка"), message: Text(errorMessage), dismissButton: .default(Text("OK")))
+        }
+        .alert("Подтверждение удаления", isPresented: $showDeleteConfirmation) {
+            Button("Отмена", role: .cancel) { }
+            Button("Удалить", role: .destructive) {
+                onDelete()
+                presentationMode.wrappedValue.dismiss()
+            }
+        } message: {
+            Text("Вы уверены, что хотите удалить клиента \(client.fullName)?")
         }
     }
 }

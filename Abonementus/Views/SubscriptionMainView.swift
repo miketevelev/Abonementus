@@ -15,6 +15,7 @@ struct SubscriptionMainView: View {
     
     let onLessonTap: (Lesson) -> Void
     let onLessonUncomplete: (Lesson) -> Void
+    let onRefresh: () -> Void
     
     @State private var showCompletedAmount = false
     @State private var showPendingAmount = false
@@ -38,6 +39,20 @@ struct SubscriptionMainView: View {
             Text("Абонементы")
                 .font(.headline)
                 .fontWeight(.bold)
+            
+            // Update icon
+            Button(action: {
+                print("Manual refresh triggered")
+                onRefresh()
+            }) {
+                Image(systemName: "arrow.clockwise")
+                    .foregroundColor(.blue)
+                    .font(.system(size: 14))
+                    .padding(6)
+                    .background(Color.blue.opacity(0.2))
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+            }
+            .buttonStyle(PlainButtonStyle())
             
             Spacer()
             
@@ -361,7 +376,8 @@ struct SubscriptionMainView_Previews: PreviewProvider {
             showAllLessons: .constant(false),
             showHistory: .constant(false),
             onLessonTap: { _ in },
-            onLessonUncomplete: { _ in }
+            onLessonUncomplete: { _ in },
+            onRefresh: {}
         )
         .frame(width: 800, height: 600)
         .padding()

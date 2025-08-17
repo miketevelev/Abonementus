@@ -37,19 +37,7 @@ struct MainView: SwiftUI.View {
             } else {
                 // Show content regardless of whether clients exist
                 VStack {
-                    // Debug refresh button
-                    HStack {
-                        Spacer()
-                        Button(action: {
-                            print("Manual refresh triggered")
-                            refreshAllData()
-                        }) {
-                            Image(systemName: "arrow.clockwise")
-                                .foregroundColor(.blue)
-                        }
-                        .buttonStyle(PlainButtonStyle())
-                        .padding(.trailing)
-                    }
+
                     
                     if clientVM.clients.isEmpty {
                         // Show welcome message if no clients exist
@@ -57,6 +45,9 @@ struct MainView: SwiftUI.View {
                             Image(systemName: "person.3.fill")
                                 .font(.system(size: 60))
                                 .foregroundColor(.blue)
+                                .padding(16)
+                                .background(Color.blue.opacity(0.2))
+                                .clipShape(RoundedRectangle(cornerRadius: 16))
                             
                             Text("Добро пожаловать в Abonementus!")
                                 .font(.title)
@@ -98,6 +89,9 @@ struct MainView: SwiftUI.View {
                             },
                             onLessonUncomplete: { lesson in
                                 lessonVM.uncompleteLesson(lesson: lesson)
+                            },
+                            onRefresh: {
+                                refreshAllData()
                             }
                         )
                     }

@@ -37,6 +37,11 @@ struct ClientListView: View {
             .padding(.horizontal)
             .padding(.top)
             
+            // Divider line below title
+            Divider()
+                .padding(.horizontal)
+                .padding(.top, 10)
+            
             // Clients list
             if clients.isEmpty {
                 // Empty state
@@ -44,6 +49,9 @@ struct ClientListView: View {
                     Image(systemName: "person.3")
                         .font(.system(size: 40))
                         .foregroundColor(.secondary)
+                        .padding(12)
+                        .background(Color.secondary.opacity(0.2))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
                     
                     Text("Нет клиентов")
                         .font(.headline)
@@ -83,7 +91,7 @@ struct ClientRow: View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
                 Text(client.fullName)
-                    .font(.subheadline)
+                    .font(.title3)
                     .fontWeight(.medium)
                 
                 if let phone = client.phone {
