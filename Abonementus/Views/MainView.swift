@@ -253,6 +253,6 @@ struct MainView: SwiftUI.View {
 struct MainView_Previews: PreviewProvider {
     static var previews: some SwiftUI.View {
         MainView()
-            .frame(minWidth: 1000, minHeight: 600)
+            .frame(minWidth: 1400, minHeight: 600)
     }
 }

@@ -279,7 +279,7 @@ struct LessonListView: View {
                 }
                 .buttonStyle(PlainButtonStyle())
             }
-            .padding(.trailing, 15)
+            .padding(.trailing, 1)
         }
         .padding(.horizontal, 15)
         .padding(.vertical, 8)
