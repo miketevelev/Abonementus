@@ -247,45 +247,41 @@ struct LessonListView: View {
             .foregroundColor(.secondary)
             
             Spacer()
-            
-            // Delete button (only for single lessons)
-            if lesson.subscriptionId == nil {
+
+            // Trailing actions with fixed spacing
+            HStack(spacing: 8) {
+                if lesson.subscriptionId == nil {
+                    // Delete for single lessons
+                    Button(action: {
+                        lessonToDelete = lesson.id
+                        showDeleteConfirmation = true
+                    }) {
+                        Image(systemName: "trash")
+                            .foregroundColor(.red)
+                            .font(.system(size: 14))
+                            .padding(6)
+                            .background(Color.red.opacity(0.2))
+                            .clipShape(RoundedRectangle(cornerRadius: 6))
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
+
+                // Edit button (visible for both single and subscription lessons)
                 Button(action: {
-                    lessonToDelete = lesson.id
-                    showDeleteConfirmation = true
+                    selectedLessonForEdit = lesson
                 }) {
-                    Image(systemName: "trash")
-                        .foregroundColor(.red)
+                    Image(systemName: "pencil.circle")
+                        .foregroundColor(.blue)
                         .font(.system(size: 14))
                         .padding(6)
-                        .background(Color.red.opacity(0.2))
+                        .background(Color.blue.opacity(0.2))
                         .clipShape(RoundedRectangle(cornerRadius: 6))
                 }
                 .buttonStyle(PlainButtonStyle())
-                .padding(.trailing, 20)
-            } else {
-                // Empty space to maintain alignment
-                Rectangle()
-                    .fill(Color.clear)
-                    .frame(width: 28, height: 28)
-                    .padding(.trailing, 20)
             }
-
-            // Edit button (pencil) to open editor
-            Button(action: {
-                selectedLessonForEdit = lesson
-            }) {
-                Image(systemName: "pencil.circle")
-                    .foregroundColor(.blue)
-                    .font(.system(size: 14))
-                    .padding(6)
-                    .background(Color.blue.opacity(0.2))
-                    .clipShape(RoundedRectangle(cornerRadius: 6))
-            }
-            .buttonStyle(PlainButtonStyle())
-            .padding(.trailing, 8)
+            .padding(.trailing, 15)
         }
-        .padding(.horizontal, 20)
+        .padding(.horizontal, 15)
         .padding(.vertical, 8)
     }
 }
