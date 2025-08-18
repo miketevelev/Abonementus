@@ -3,6 +3,7 @@ import SwiftUI
 struct HistoryView: View {
     let lessons: [Lesson]
     let clients: [Client]
+    var extraIncomes: [ExtraIncome] = []
     
     @Environment(\.presentationMode) var presentationMode
     
@@ -73,7 +74,7 @@ struct HistoryView: View {
                                         .fontWeight(.bold)
                                         .foregroundColor(.primary)
                                     Spacer()
-                                    Text("Итого: \(String(format: "%.2f", yearData.totalAmount)) руб.")
+                                    Text("Основной: \(String(format: "%.2f", yearData.totalAmount)) руб. | Доп: \(String(format: "%.2f", yearData.totalExtraAmount)) руб.")
                                         .font(.subheadline)
                                         .fontWeight(.medium)
                                         .foregroundColor(.secondary)
@@ -90,7 +91,7 @@ struct HistoryView: View {
                                                 .font(.subheadline)
                                                 .fontWeight(.medium)
                                             Spacer()
-                                            Text("\(String(format: "%.2f", monthData.amount)) руб.")
+                                            Text("Основной: \(String(format: "%.2f", monthData.amount)) руб. | Доп: \(String(format: "%.2f", monthData.extraAmount)) руб.")
                                                 .font(.subheadline)
                                                 .fontWeight(.medium)
                                         }
@@ -123,6 +124,7 @@ struct HistoryView: View {
         
         // Group completed lessons by month
         var monthlyIncome: [String: Double] = [:]
+        var monthlyExtra: [String: Double] = [:]
         
         for lesson in lessons where lesson.isCompleted {
             guard let conductedAt = lesson.conductedAt else { continue }
@@ -134,6 +136,14 @@ struct HistoryView: View {
             monthlyIncome[key, default: 0] += lesson.price
         }
         
+        // Include extra incomes
+        for inc in extraIncomes {
+            let year = calendar.component(.year, from: inc.receivedAt)
+            let month = calendar.component(.month, from: inc.receivedAt)
+            let key = "\(year)-\(month)"
+            monthlyExtra[key, default: 0] += inc.amount
+        }
+        
         // Convert to MonthlyIncome objects
         return monthlyIncome.map { key, amount in
             let components = key.split(separator: "-")
@@ -141,7 +151,7 @@ struct HistoryView: View {
             let month = Int(components[1]) ?? 0
             
             let monthName = dateFormatter.monthSymbols[month - 1]
-            return MonthlyIncome(year: year, month: month, monthName: monthName, amount: amount)
+            return MonthlyIncome(year: year, month: month, monthName: monthName, amount: amount, extraAmount: monthlyExtra[key] ?? 0)
         }.sorted { $0.year > $1.year || ($0.year == $1.year && $0.month > $1.month) }
     }
     
@@ -150,7 +160,8 @@ struct HistoryView: View {
         
         return groupedByYear.map { year, months in
             let totalAmount = months.reduce(0) { $0 + $1.amount }
-            return YearlyData(year: year, months: months.sorted { $0.month > $1.month }, totalAmount: totalAmount)
+            let totalExtraAmount = months.reduce(0) { $0 + $1.extraAmount }
+            return YearlyData(year: year, months: months.sorted { $0.month > $1.month }, totalAmount: totalAmount, totalExtraAmount: totalExtraAmount)
         }.sorted { $0.year > $1.year }
     }
 }
@@ -162,12 +173,14 @@ struct MonthlyIncome {
     let month: Int
     let monthName: String
     let amount: Double
+    let extraAmount: Double
 }
 
 struct YearlyData {
     let year: Int
     let months: [MonthlyIncome]
     let totalAmount: Double
+    let totalExtraAmount: Double
 }
 
 // MARK: - Preview

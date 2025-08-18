@@ -6,6 +6,7 @@ struct MainView: SwiftUI.View {
     @StateObject private var clientVM = ClientViewModel()
     @StateObject private var lessonVM = LessonViewModel()
     @StateObject private var subscriptionVM = SubscriptionViewModel()
+    @StateObject private var extraIncomeVM = ExtraIncomeViewModel()
     
     // State variables
     @State private var selectedClient: Client?
@@ -14,6 +15,7 @@ struct MainView: SwiftUI.View {
     @State private var showAllSubscriptions = false
     @State private var showAllLessons = false
     @State private var showHistory = false
+    @State private var showExtraIncome = false
     
     var body: some SwiftUI.View {
         HStack(spacing: 0) {
@@ -87,11 +89,13 @@ struct MainView: SwiftUI.View {
                             },
                             completedAmount: lessonVM.calculateCompletedAmount(),
                             pendingAmount: lessonVM.calculatePendingAmount(),
+                            extraAmount: extraIncomeVM.calculateExtraAmountForCurrentMonth(),
                             showSubscriptionCreate: $showSubscriptionCreate,
                             showLessonCreate: $showLessonCreate,
                             showAllSubscriptions: $showAllSubscriptions,
                             showAllLessons: $showAllLessons,
                             showHistory: $showHistory,
+                            showExtraIncome: $showExtraIncome,
                             onLessonTap: { lesson in
                                 lessonVM.completeLesson(lesson: lesson)
                             },
@@ -171,10 +175,16 @@ struct MainView: SwiftUI.View {
                 }
             )
         }
+        .sheet(isPresented: $showExtraIncome) {
+            ExtraIncomeContainerView(
+                extraIncomeVM: extraIncomeVM
+            )
+        }
         .sheet(isPresented: $showHistory) {
             HistoryView(
                 lessons: lessonVM.lessons,
-                clients: clientVM.clients
+                clients: clientVM.clients,
+                extraIncomes: extraIncomeVM.incomes
             )
         }
         .onAppear {
@@ -232,6 +242,7 @@ struct MainView: SwiftUI.View {
             DispatchQueue.main.async {
                 print("MainView: Starting initial data load...")
                 self.refreshAllData()
+                self.extraIncomeVM.fetchAll()
             }
         }
     }
@@ -244,6 +255,7 @@ struct MainView: SwiftUI.View {
         clientVM.fetchClients()
         lessonVM.fetchLessons()
         subscriptionVM.fetchSubscriptions()
+        extraIncomeVM.fetchAll()
         
         print("MainView: refreshAllData completed")
     }
@@ -253,6 +265,6 @@ struct MainView: SwiftUI.View {
 struct MainView_Previews: PreviewProvider {
     static var previews: some SwiftUI.View {
         MainView()
-            .frame(minWidth: 1400, minHeight: 600)
+            .frame(minWidth: 1500, minHeight: 600)
     }
 }

@@ -85,6 +85,25 @@ class Database {
                 t.foreignKey(Lesson.subscriptionId, references: Subscription.table, Subscription.id, delete: .cascade)
             })
             print("Database: Lesson table created/verified successfully")
+
+            // Income categories
+            try db.run(IncomeCategory.table.create(ifNotExists: true) { t in
+                t.column(IncomeCategory.id, primaryKey: .autoincrement)
+                t.column(IncomeCategory.name, unique: true)
+            })
+            print("Database: IncomeCategory table created/verified successfully")
+
+            // Extra incomes
+            try db.run(ExtraIncome.table.create(ifNotExists: true) { t in
+                t.column(ExtraIncome.id, primaryKey: .autoincrement)
+                t.column(ExtraIncome.categoryId)
+                t.column(ExtraIncome.amount)
+                t.column(ExtraIncome.receivedAt)
+                t.column(ExtraIncome.createdAt)
+                t.column(ExtraIncome.updatedAt)
+                t.foreignKey(ExtraIncome.categoryId, references: IncomeCategory.table, IncomeCategory.id, delete: .cascade)
+            })
+            print("Database: ExtraIncome table created/verified successfully")
             
             // Run migrations for existing databases
             migrateDatabase()

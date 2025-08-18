@@ -6,12 +6,14 @@ struct SubscriptionMainView: View {
     let getLessons: (Int64) -> [Lesson]
     let completedAmount: Double
     let pendingAmount: Double
+    let extraAmount: Double
     
     @Binding var showSubscriptionCreate: Bool
     @Binding var showLessonCreate: Bool
     @Binding var showAllSubscriptions: Bool
     @Binding var showAllLessons: Bool
     @Binding var showHistory: Bool
+    @Binding var showExtraIncome: Bool
     
     let onLessonTap: (Lesson) -> Void
     let onLessonUncomplete: (Lesson) -> Void
@@ -19,6 +21,7 @@ struct SubscriptionMainView: View {
     
     @State private var showCompletedAmount = false
     @State private var showPendingAmount = false
+    @State private var showExtraAmount = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -104,6 +107,13 @@ struct SubscriptionMainView: View {
                         .padding(8)
                 }
                 .buttonStyle(BrownButtonStyle())
+
+                // Extra income button
+                Button(action: { showExtraIncome = true }) {
+                    Label("Доп", systemImage: "plus.rectangle.on.rectangle")
+                        .padding(8)
+                }
+                .buttonStyle(BrownButtonStyle())
             }
         }
         .padding(.horizontal)
@@ -124,6 +134,13 @@ struct SubscriptionMainView: View {
                 amount: pendingAmount,
                 isShowing: $showPendingAmount,
                 color: .orange
+            )
+
+            AmountIndicator(
+                title: "Доп заработок",
+                amount: extraAmount,
+                isShowing: $showExtraAmount,
+                color: .purple
             )
         }
         .padding()
