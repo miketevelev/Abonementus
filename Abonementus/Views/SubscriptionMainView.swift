@@ -409,11 +409,13 @@ struct SubscriptionMainView_Previews: PreviewProvider {
             getLessons: { _ in sampleLessons },
             completedAmount: 1500,
             pendingAmount: 6500,
+            extraAmount: 0,
             showSubscriptionCreate: .constant(false),
             showLessonCreate: .constant(false),
             showAllSubscriptions: .constant(false),
             showAllLessons: .constant(false),
             showHistory: .constant(false),
+            showExtraIncome: .constant(false),
             onLessonTap: { _ in },
             onLessonUncomplete: { _ in },
             onRefresh: {}
