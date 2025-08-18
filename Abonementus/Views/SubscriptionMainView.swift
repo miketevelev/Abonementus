@@ -70,13 +70,13 @@ struct SubscriptionMainView: View {
                 .buttonStyle(BlueButtonStyle())
                 
                 Button(action: { showLessonCreate = true }) {
-                    Label("Урок", systemImage: "book.fill")
+                    Label("Урок", systemImage: "plus.circle")
                         .padding(8)
                 }
                 .buttonStyle(YellowButtonStyle())
                 
                 Button(action: { showAllLessons = true }) {
-                    Label("Уроки", systemImage: "list.bullet.rectangle")
+                    Label("Уроки", systemImage: "list.bullet")
                         .padding(8)
                 }
                 .buttonStyle(YellowButtonStyle())
@@ -188,6 +188,10 @@ struct SubscriptionCard: View {
                         .font(.headline)
                     
                     Text("\(String(format: "%.2f", subscription.totalPrice)) руб.")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    
+                    Text("Начало: \(subscription.createdAt.toString(format: "dd.MM.yyyy"))")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }

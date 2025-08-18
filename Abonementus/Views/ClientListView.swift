@@ -91,12 +91,12 @@ struct ClientRow: View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
                 Text(client.fullName)
-                    .font(.title3)
+                    .font(.headline)
                     .fontWeight(.medium)
                 
                 if let phone = client.phone {
                     Text(phone)
-                        .font(.caption)
+                        .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
             }

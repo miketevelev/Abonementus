@@ -54,6 +54,8 @@ struct SubscriptionListView: View {
                 .padding(.horizontal, 20)
                 .padding(.top)
                 
+                Spacer()
+                
                 // Subscriptions list
                 List {
                     // Active subscriptions

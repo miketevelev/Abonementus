@@ -37,6 +37,8 @@ struct HistoryView: View {
             .padding(.horizontal, 20)
             .padding(.top)
             
+            Spacer()
+            
             // History content
             if monthlyData.isEmpty {
                 // Empty state
