@@ -112,7 +112,7 @@ struct HistoryView: View {
                 }
             }
         }
-        .frame(minWidth: 500, minHeight: 400)
+        .frame(minWidth: 700, minHeight: 400)
     }
     
     // MARK: - Data Processing
@@ -144,14 +144,17 @@ struct HistoryView: View {
             monthlyExtra[key, default: 0] += inc.amount
         }
         
-        // Convert to MonthlyIncome objects
-        return monthlyIncome.map { key, amount in
+        // Convert to MonthlyIncome objects (include months having only extra incomes)
+        let allKeys = Set(monthlyIncome.keys).union(monthlyExtra.keys)
+        return allKeys.map { key in
             let components = key.split(separator: "-")
             let year = Int(components[0]) ?? 0
             let month = Int(components[1]) ?? 0
-            
-            let monthName = dateFormatter.monthSymbols[month - 1]
-            return MonthlyIncome(year: year, month: month, monthName: monthName, amount: amount, extraAmount: monthlyExtra[key] ?? 0)
+            let monthIndex = max(1, min(12, month))
+            let monthName = dateFormatter.monthSymbols[monthIndex - 1]
+            let main = monthlyIncome[key] ?? 0
+            let extra = monthlyExtra[key] ?? 0
+            return MonthlyIncome(year: year, month: monthIndex, monthName: monthName, amount: main, extraAmount: extra)
         }.sorted { $0.year > $1.year || ($0.year == $1.year && $0.month > $1.month) }
     }
     
