@@ -8,6 +8,8 @@ struct LessonListView: View {
     
     @Environment(\.presentationMode) var presentationMode
     @State private var selectedYear: Int = Calendar.current.component(.year, from: Date())
+    @State private var selectedMonth: Int? = nil
+    @State private var selectedClientId: Int64? = nil
     @State private var selectedLessonForEdit: Lesson?
     @State private var showDeleteConfirmation = false
     @State private var lessonToDelete: Int64?
@@ -32,14 +34,36 @@ struct LessonListView: View {
                             .font(.largeTitle)
                             .fontWeight(.bold)
                         
-                        if availableYears.count > 1 {
-                            Picker("Год", selection: $selectedYear) {
-                                ForEach(availableYears, id: \.self) { year in
-                                    Text(String(year)).tag(year)
+                        HStack(spacing: 12) {
+                            if availableYears.count > 1 {
+                                Picker("Год", selection: $selectedYear) {
+                                    ForEach(availableYears, id: \.self) { year in
+                                        Text(String(year)).tag(year)
+                                    }
+                                }
+                                .pickerStyle(MenuPickerStyle())
+                                .frame(width: 100)
+                            }
+                            
+                            // Month filter (always visible)
+                            Picker("Месяц", selection: $selectedMonth) {
+                                Text("Все месяцы").tag(nil as Int?)
+                                ForEach(availableMonths, id: \.self) { month in
+                                    Text(monthName(for: month)).tag(Optional(month))
                                 }
                             }
                             .pickerStyle(MenuPickerStyle())
-                            .frame(width: 100)
+                            .frame(width: 140)
+                            
+                            // Client filter (always visible)
+                            Picker("Клиент", selection: $selectedClientId) {
+                                Text("Все клиенты").tag(nil as Int64?)
+                                ForEach(clients.sorted { $0.fullName < $1.fullName }, id: \.id) { client in
+                                    Text(client.fullName).tag(Optional(client.id))
+                                }
+                            }
+                            .pickerStyle(MenuPickerStyle())
+                            .frame(width: 220)
                         }
                     }
                     
@@ -141,22 +165,55 @@ struct LessonListView: View {
         return Array(Set(years)).sorted(by: >)
     }
     
+    // Completed months available for the selected year
+    private var availableMonths: [Int] {
+        let calendar = Calendar.current
+        let months = lessons.compactMap { lesson -> Int? in
+            if let conductedAt = lesson.conductedAt {
+                let year = calendar.component(.year, from: conductedAt)
+                if year == selectedYear { return calendar.component(.month, from: conductedAt) }
+            }
+            return nil
+        }
+        let unique = Array(Set(months)).sorted()
+        return unique
+    }
+    
     private var filteredActiveLessons: [Lesson] {
         let calendar = Calendar.current
         return activeLessons.filter { lesson in
-            calendar.component(.year, from: lesson.createdAt) == selectedYear
+            // Filter by year (createdAt for active)
+            guard calendar.component(.year, from: lesson.createdAt) == selectedYear else { return false }
+            // Filter by client if selected
+            if let clientId = selectedClientId, lesson.clientId != clientId { return false }
+            // If a month is selected, active lessons should be hidden
+            if selectedMonth != nil { return false }
+            return true
         }
     }
     
     private var filteredCompletedLessons: [Lesson] {
         let calendar = Calendar.current
         return completedLessons.filter { lesson in
-            if let conductedAt = lesson.conductedAt {
-                return calendar.component(.year, from: conductedAt) == selectedYear
-            } else {
-                return calendar.component(.year, from: lesson.createdAt) == selectedYear
-            }
+            // Year and month use conductedAt if exists
+            let dateForFilter = lesson.conductedAt ?? lesson.createdAt
+            guard calendar.component(.year, from: dateForFilter) == selectedYear else { return false }
+            // Month filter for completed
+            if let month = selectedMonth, calendar.component(.month, from: dateForFilter) != month { return false }
+            // Client filter
+            if let clientId = selectedClientId, lesson.clientId != clientId { return false }
+            return true
         }
+    }
+    
+    private func monthName(for month: Int) -> String {
+        let df = DateFormatter()
+        df.locale = Locale(identifier: "ru_RU")
+        let monthSymbols = df.monthSymbols ?? []
+        if month >= 1 && month <= monthSymbols.count {
+            return monthSymbols[month - 1].capitalized
+        }
+        return String(month)
     }
     
     private func lessonRow(for lesson: Lesson) -> some View {
