@@ -103,7 +103,7 @@ struct SubscriptionListView: View {
                 .listStyle(.bordered(alternatesRowBackgrounds: true))
                 #endif
             }
-            .frame(minWidth: 700, minHeight: 500)
+            .frame(minWidth: 900, minHeight: 500)
             .alert("Подтверждение удаления", isPresented: $showDeleteConfirmation) {
                 Button("Отмена", role: .cancel) { }
                 Button("Удалить", role: .destructive) {
@@ -182,13 +182,12 @@ struct SubscriptionListView: View {
     }
     
     private func monthName(for month: Int) -> String {
-        let df = DateFormatter()
-        df.locale = Locale(identifier: "ru_RU")
-        let monthSymbols = df.monthSymbols ?? []
-        if month >= 1 && month <= monthSymbols.count {
-            return monthSymbols[month - 1].capitalized
-        }
-        return String(month)
+        let monthNames = [
+            1: "Январь", 2: "Февраль", 3: "Март", 4: "Апрель",
+            5: "Май", 6: "Июнь", 7: "Июль", 8: "Август",
+            9: "Сентябрь", 10: "Октябрь", 11: "Ноябрь", 12: "Декабрь"
+        ]
+        return monthNames[month] ?? String(month)
     }
     
     private func subscriptionRow(for subscription: Subscription) -> some View {

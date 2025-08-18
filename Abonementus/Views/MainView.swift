@@ -59,7 +59,7 @@ struct MainView: SwiftUI.View {
                                 .multilineTextAlignment(.center)
                             
                             Button(action: {
-                                selectedClient = Client(
+                                let newClient = Client(
                                     id: 0,
                                     firstName: "",
                                     lastName: nil,
@@ -70,6 +70,7 @@ struct MainView: SwiftUI.View {
                                     createdAt: Date(),
                                     updatedAt: Date()
                                 )
+                                selectedClient = newClient
                             }) {
                                 Label("Создать клиента", systemImage: "plus.circle")
                                     .padding()
@@ -265,6 +266,6 @@ struct MainView: SwiftUI.View {
 struct MainView_Previews: PreviewProvider {
     static var previews: some SwiftUI.View {
         MainView()
-            .frame(minWidth: 1500, minHeight: 600)
+            .frame(minWidth: 1600, minHeight: 700)
     }
 }

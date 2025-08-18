@@ -74,10 +74,13 @@ extension Date {
     
     // Получение названия месяца
     func monthName() -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM"
-        formatter.locale = Locale(identifier: "ru_RU")
-        return formatter.string(from: self).capitalized
+        let monthNames = [
+            1: "Январь", 2: "Февраль", 3: "Март", 4: "Апрель",
+            5: "Май", 6: "Июнь", 7: "Июль", 8: "Август",
+            9: "Сентябрь", 10: "Октябрь", 11: "Ноябрь", 12: "Декабрь"
+        ]
+        let month = Calendar.current.component(.month, from: self)
+        return monthNames[month] ?? String(month)
     }
     
     // Создание даты из компонентов

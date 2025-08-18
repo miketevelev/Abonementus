@@ -272,6 +272,7 @@ class Database {
                 appropriateFor: nil,
                 create: true
             )
+            
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "ddMMyyyy"
             let dateString = dateFormatter.string(from: Date())
@@ -287,6 +288,9 @@ class Database {
             process.executableURL = URL(fileURLWithPath: "/usr/bin/zip")
             process.currentDirectoryURL = sourceFolderURL
             process.arguments = ["-j", zipFileURL.path, sourceDBURL.lastPathComponent]
+            
+            print("Database: Zip command: /usr/bin/zip -j \(zipFileURL.path) \(sourceDBURL.lastPathComponent)")
+            print("Database: Working directory: \(sourceFolderURL.path)")
             
             let pipe = Pipe()
             process.standardOutput = pipe

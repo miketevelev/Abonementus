@@ -64,47 +64,14 @@ struct ExtraIncomeListView: View {
             
             // List
             List {
-                Section(header: Text("Записи")) {
+                Section(header: HStack {
+                    Text("Записи")
+                    Spacer()
+                }) {
                     ForEach(filteredIncomes, id: \.id) { income in
-                        HStack {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(categoryName(for: income.categoryId))
-                                    .font(.headline)
-                                Text("\(String(format: "%.2f", income.amount)) руб.")
-                                    .font(.subheadline)
-                            }
-                            Spacer()
-                            VStack(alignment: .trailing, spacing: 4) {
-                                Text("Получен: \(income.receivedAt.toString())")
-                                Text("Создан: \(income.createdAt.toString())")
-                            }
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            
-                            HStack(spacing: 8) {
-                                Button(action: { onEdit(income) }) {
-                                    Image(systemName: "pencil.circle")
-                                        .foregroundColor(.blue)
-                                        .font(.system(size: 14))
-                                        .padding(6)
-                                        .background(Color.blue.opacity(0.2))
-                                        .clipShape(RoundedRectangle(cornerRadius: 6))
-                                }
-                                .buttonStyle(PlainButtonStyle())
-                                
-                                Button(action: { onDelete(income.id) }) {
-                                    Image(systemName: "trash")
-                                        .foregroundColor(.red)
-                                        .font(.system(size: 14))
-                                        .padding(6)
-                                        .background(Color.red.opacity(0.2))
-                                        .clipShape(RoundedRectangle(cornerRadius: 6))
-                                }
-                                .buttonStyle(PlainButtonStyle())
-                            }
-                        }
-                        .padding(.horizontal, 15)
-                        .padding(.vertical, 8)
+                        incomeRow(for: income)
+                            .background(Color.gray.opacity(0.1))
+                            .cornerRadius(6)
                     }
                 }
             }
@@ -115,7 +82,7 @@ struct ExtraIncomeListView: View {
             .listStyle(.automatic)
             #endif
         }
-        .frame(minWidth: 600, minHeight: 500)
+        .frame(minWidth: 900, minHeight: 500)
     }
     
     private var availableYears: [Int] {
@@ -148,11 +115,63 @@ struct ExtraIncomeListView: View {
     }
     
     private func monthName(for month: Int) -> String {
-        let df = DateFormatter()
-        df.locale = Locale(identifier: "ru_RU")
-        let monthSymbols = df.monthSymbols ?? []
-        if month >= 1 && month <= monthSymbols.count { return monthSymbols[month - 1].capitalized }
-        return String(month)
+        let monthNames = [
+            1: "Январь", 2: "Февраль", 3: "Март", 4: "Апрель",
+            5: "Май", 6: "Июнь", 7: "Июль", 8: "Август",
+            9: "Сентябрь", 10: "Октябрь", 11: "Ноябрь", 12: "Декабрь"
+        ]
+        return monthNames[month] ?? String(month)
+    }
+    
+    private func incomeRow(for income: ExtraIncome) -> some View {
+        return HStack {
+            // Category info and amount
+            VStack(alignment: .leading, spacing: 4) {
+                Text(categoryName(for: income.categoryId))
+                    .font(.headline)
+                
+                Text("\(String(format: "%.2f", income.amount)) руб.")
+                    .font(.subheadline)
+            }
+            .frame(width: 200, alignment: .leading)
+            
+            // Dates info - aligned to left with 190px margin from right
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Получен: \(income.receivedAt.toString())")
+                Text("Создан: \(income.createdAt.toString())")
+            }
+            .font(.subheadline)
+            .foregroundColor(.secondary)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.leading, 150)
+            .padding(.trailing, 190)
+
+            // Actions
+            HStack(spacing: 8) {
+                Button(action: { onEdit(income) }) {
+                    Image(systemName: "pencil.circle")
+                        .foregroundColor(.blue)
+                        .font(.system(size: 14))
+                        .padding(6)
+                        .background(Color.blue.opacity(0.2))
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                }
+                .buttonStyle(PlainButtonStyle())
+                
+                Button(action: { onDelete(income.id) }) {
+                    Image(systemName: "trash")
+                        .foregroundColor(.red)
+                        .font(.system(size: 14))
+                        .padding(6)
+                        .background(Color.red.opacity(0.2))
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                }
+                .buttonStyle(PlainButtonStyle())
+            }
+            .padding(.trailing, 1)
+        }
+        .padding(.horizontal, 15)
+        .padding(.vertical, 8)
     }
 }
 

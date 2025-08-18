@@ -151,7 +151,12 @@ struct HistoryView: View {
             let year = Int(components[0]) ?? 0
             let month = Int(components[1]) ?? 0
             let monthIndex = max(1, min(12, month))
-            let monthName = dateFormatter.monthSymbols[monthIndex - 1]
+            let monthNames = [
+                1: "Январь", 2: "Февраль", 3: "Март", 4: "Апрель",
+                5: "Май", 6: "Июнь", 7: "Июль", 8: "Август",
+                9: "Сентябрь", 10: "Октябрь", 11: "Ноябрь", 12: "Декабрь"
+            ]
+            let monthName = monthNames[monthIndex] ?? String(monthIndex)
             let main = monthlyIncome[key] ?? 0
             let extra = monthlyExtra[key] ?? 0
             return MonthlyIncome(year: year, month: monthIndex, monthName: monthName, amount: main, extraAmount: extra)

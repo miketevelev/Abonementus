@@ -10,6 +10,7 @@ struct LessonListView: View {
     @State private var selectedYear: Int = Calendar.current.component(.year, from: Date())
     @State private var selectedMonth: Int? = nil
     @State private var selectedClientId: Int64? = nil
+    @State private var selectedLessonType: String? = nil
     @State private var selectedLessonForEdit: Lesson?
     @State private var showDeleteConfirmation = false
     @State private var lessonToDelete: Int64?
@@ -64,6 +65,15 @@ struct LessonListView: View {
                             }
                             .pickerStyle(MenuPickerStyle())
                             .frame(width: 220)
+                            
+                            // Lesson type filter
+                            Picker("Тип урока", selection: $selectedLessonType) {
+                                Text("Все типы").tag(nil as String?)
+                                Text("Абонементный").tag(Optional("subscription"))
+                                Text("Разовый").tag(Optional("single"))
+                            }
+                            .pickerStyle(MenuPickerStyle())
+                            .frame(width: 230)
                         }
                     }
                     
@@ -109,7 +119,7 @@ struct LessonListView: View {
                 .listStyle(.automatic)
                 #endif
             }
-            .frame(minWidth: 600, minHeight: 500)
+            .frame(minWidth: 900, minHeight: 500)
             .sheet(item: $selectedLessonForEdit) { lesson in
                 let client = clients.first { $0.id == lesson.clientId }
                 LessonEditView(
@@ -186,6 +196,11 @@ struct LessonListView: View {
             guard calendar.component(.year, from: lesson.createdAt) == selectedYear else { return false }
             // Filter by client if selected
             if let clientId = selectedClientId, lesson.clientId != clientId { return false }
+            // Filter by lesson type if selected
+            if let lessonType = selectedLessonType {
+                if lessonType == "subscription" && lesson.subscriptionId == nil { return false }
+                if lessonType == "single" && lesson.subscriptionId != nil { return false }
+            }
             // If a month is selected, active lessons should be hidden
             if selectedMonth != nil { return false }
             return true
@@ -202,18 +217,22 @@ struct LessonListView: View {
             if let month = selectedMonth, calendar.component(.month, from: dateForFilter) != month { return false }
             // Client filter
             if let clientId = selectedClientId, lesson.clientId != clientId { return false }
+            // Filter by lesson type if selected
+            if let lessonType = selectedLessonType {
+                if lessonType == "subscription" && lesson.subscriptionId == nil { return false }
+                if lessonType == "single" && lesson.subscriptionId != nil { return false }
+            }
             return true
         }
     }
     
     private func monthName(for month: Int) -> String {
-        let df = DateFormatter()
-        df.locale = Locale(identifier: "ru_RU")
-        let monthSymbols = df.monthSymbols ?? []
-        if month >= 1 && month <= monthSymbols.count {
-            return monthSymbols[month - 1].capitalized
-        }
-        return String(month)
+        let monthNames = [
+            1: "Январь", 2: "Февраль", 3: "Март", 4: "Апрель",
+            5: "Май", 6: "Июнь", 7: "Июль", 8: "Август",
+            9: "Сентябрь", 10: "Октябрь", 11: "Ноябрь", 12: "Декабрь"
+        ]
+        return monthNames[month] ?? String(month)
     }
     
     private func lessonRow(for lesson: Lesson) -> some View {
@@ -228,12 +247,14 @@ struct LessonListView: View {
                 Text("\(String(format: "%.2f", lesson.price)) руб.")
                     .font(.subheadline)
             }
+            .frame(width: 200, alignment: .leading)
             
-            Spacer()
-            
-            // Dates and subscription info
+            // Dates and subscription info - aligned to left with 190px margin from right
             VStack(alignment: .leading, spacing: 4) {
                 if !lesson.isCompleted {
+                    Text("Создан: \(lesson.createdAt.toString())")
+                } else if lesson.conductedAt == nil {
+                    // Show creation date only for completed lessons without conductedAt
                     Text("Создан: \(lesson.createdAt.toString())")
                 }
                 if let conductedAt = lesson.conductedAt {
@@ -245,8 +266,9 @@ struct LessonListView: View {
             }
             .font(.subheadline)
             .foregroundColor(.secondary)
-            
-            Spacer()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.leading, 150)
+            .padding(.trailing, 190)
 
             // Show actions only for completed lessons
             if lesson.isCompleted {
