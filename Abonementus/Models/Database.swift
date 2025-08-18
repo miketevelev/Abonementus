@@ -4,6 +4,7 @@ import Foundation
 class Database {
     static let shared = Database()
     private var db: Connection?
+    private let databaseFileName = "abonementus_bd.sqlite"
     
     private init() {
         setupDatabase()
@@ -21,7 +22,7 @@ class Database {
         let folderURL = appSupportURL.appendingPathComponent("Abonementus")
         try? fileManager.createDirectory(at: folderURL, withIntermediateDirectories: true)
         
-        let dbURL = folderURL.appendingPathComponent("abonementus_bd.sqlite")
+        let dbURL = folderURL.appendingPathComponent(databaseFileName)
         
         do {
             db = try Connection(dbURL.path)
@@ -220,6 +221,73 @@ class Database {
             }
         } catch {
             print("Database: Error verifying foreign keys: \(error)")
+        }
+    }
+    
+    // MARK: - Backup
+    /// Creates a ZIP archive of the SQLite database in the user's Documents folder.
+    /// The file name format is "AbonementusDBddMMyyyy.zip". Existing files are overwritten.
+    @discardableResult
+    func backupDatabaseToDocumentsZip() -> Bool {
+        let fileManager = FileManager.default
+        do {
+            // Locate current DB file in Application Support
+            let appSupportURL = try fileManager.url(
+                for: .applicationSupportDirectory,
+                in: .userDomainMask,
+                appropriateFor: nil,
+                create: true
+            )
+            let sourceFolderURL = appSupportURL.appendingPathComponent("Abonementus")
+            let sourceDBURL = sourceFolderURL.appendingPathComponent(databaseFileName)
+            
+            guard fileManager.fileExists(atPath: sourceDBURL.path) else {
+                print("Database: Backup failed - DB file not found at \(sourceDBURL.path)")
+                return false
+            }
+            
+            // Build destination URL in Documents
+            let documentsURL = try fileManager.url(
+                for: .documentDirectory,
+                in: .userDomainMask,
+                appropriateFor: nil,
+                create: true
+            )
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "ddMMyyyy"
+            let dateString = dateFormatter.string(from: Date())
+            let zipFileURL = documentsURL.appendingPathComponent("AbonementusDB\(dateString).zip")
+            
+            // Remove existing zip if any
+            if fileManager.fileExists(atPath: zipFileURL.path) {
+                try? fileManager.removeItem(at: zipFileURL)
+            }
+            
+            // Create zip using /usr/bin/zip for broad compatibility
+            let process = Process()
+            process.executableURL = URL(fileURLWithPath: "/usr/bin/zip")
+            process.currentDirectoryURL = sourceFolderURL
+            process.arguments = ["-j", zipFileURL.path, sourceDBURL.lastPathComponent]
+            
+            let pipe = Pipe()
+            process.standardOutput = pipe
+            process.standardError = pipe
+            
+            try process.run()
+            process.waitUntilExit()
+            
+            if process.terminationStatus == 0 {
+                print("Database: Backup completed -> \(zipFileURL.path)")
+                return true
+            } else {
+                let data = pipe.fileHandleForReading.readDataToEndOfFile()
+                let log = String(data: data, encoding: .utf8) ?? ""
+                print("Database: Backup failed with status \(process.terminationStatus). Log: \n\(log)")
+                return false
+            }
+        } catch {
+            print("Database: Backup error: \(error)")
+            return false
         }
     }
 }

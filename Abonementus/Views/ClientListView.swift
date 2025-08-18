@@ -3,7 +3,6 @@ import SwiftUI
 struct ClientListView: View {
     let clients: [Client]
     @Binding var selectedClient: Client?
-    @Binding var showClientEdit: Bool
     
     var body: some View {
         VStack(spacing: 0) {
@@ -27,7 +26,6 @@ struct ClientListView: View {
                         updatedAt: Date()
                     )
                     selectedClient = newClient
-                    showClientEdit = true
                 }) {
                     Label("Создать", systemImage: "plus.circle")
                         .padding(8)
@@ -72,7 +70,6 @@ struct ClientListView: View {
                                 .contentShape(Rectangle())
                                 .onTapGesture {
                                     selectedClient = client
-                                    showClientEdit = true
                                 }
                             Divider()
                         }

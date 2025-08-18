@@ -9,7 +9,6 @@ struct MainView: SwiftUI.View {
     
     // State variables
     @State private var selectedClient: Client?
-    @State private var showClientEdit = false
     @State private var showSubscriptionCreate = false
     @State private var showLessonCreate = false
     @State private var showAllSubscriptions = false
@@ -21,8 +20,7 @@ struct MainView: SwiftUI.View {
             // Left side - Clients list (20% width)
             ClientListView(
                 clients: clientVM.clients,
-                selectedClient: $selectedClient,
-                showClientEdit: $showClientEdit
+                selectedClient: $selectedClient
             )
             .frame(width: 250)
             .background(Color(.windowBackgroundColor))
@@ -59,7 +57,17 @@ struct MainView: SwiftUI.View {
                                 .multilineTextAlignment(.center)
                             
                             Button(action: {
-                                showClientEdit = true
+                                selectedClient = Client(
+                                    id: 0,
+                                    firstName: "",
+                                    lastName: nil,
+                                    phone: nil,
+                                    telegram: nil,
+                                    email: nil,
+                                    additionalInfo: nil,
+                                    createdAt: Date(),
+                                    updatedAt: Date()
+                                )
                             }) {
                                 Label("Создать клиента", systemImage: "plus.circle")
                                     .padding()
@@ -98,45 +106,20 @@ struct MainView: SwiftUI.View {
                 }
             }
         }
-        .sheet(isPresented: $showClientEdit) {
-            if let client = selectedClient {
-                ClientEditView(
-                    client: client,
-                    onSave: { updatedClient in
-                        if updatedClient.id == 0 {
-                            clientVM.addClient(client: updatedClient)
-                        } else {
-                            clientVM.updateClient(client: updatedClient)
-                        }
-                    },
-                    onDelete: {
-                        if let id = selectedClient?.id {
-                            clientVM.deleteClient(id: id)
-                        }
-                    }
-                )
-            } else {
-                // Fallback: create a new client if selectedClient is nil
-                ClientEditView(
-                    client: Client(
-                        id: 0,
-                        firstName: "",
-                        lastName: nil,
-                        phone: nil,
-                        telegram: nil,
-                        email: nil,
-                        additionalInfo: nil,
-                        createdAt: Date(),
-                        updatedAt: Date()
-                    ),
-                    onSave: { updatedClient in
+        .sheet(item: $selectedClient, onDismiss: { selectedClient = nil }) { client in
+            ClientEditView(
+                client: client,
+                onSave: { updatedClient in
+                    if updatedClient.id == 0 {
                         clientVM.addClient(client: updatedClient)
-                    },
-                    onDelete: {
-                        // Do nothing for new clients
+                    } else {
+                        clientVM.updateClient(client: updatedClient)
                     }
-                )
-            }
+                },
+                onDelete: {
+                    clientVM.deleteClient(id: client.id)
+                }
+            )
         }
         .sheet(isPresented: $showSubscriptionCreate) {
             SubscriptionCreateView(

@@ -53,6 +53,24 @@ struct SubscriptionMainView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 6))
             }
             .buttonStyle(PlainButtonStyle())
+
+            // Backup icon
+            Button(action: {
+                let ok = Database.shared.backupDatabaseToDocumentsZip()
+                if ok {
+                    print("Backup completed successfully")
+                } else {
+                    print("Backup failed")
+                }
+            }) {
+                Image(systemName: "externaldrive.fill.badge.plus")
+                    .foregroundColor(.purple)
+                    .font(.system(size: 14))
+                    .padding(6)
+                    .background(Color.purple.opacity(0.2))
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+            }
+            .buttonStyle(PlainButtonStyle())
             
             Spacer()
             

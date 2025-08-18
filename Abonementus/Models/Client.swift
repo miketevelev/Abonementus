@@ -1,7 +1,7 @@
 import SQLite
 import Foundation
 
-struct Client {
+struct Client: Identifiable {
     let id: Int64
     var firstName: String
     var lastName: String?

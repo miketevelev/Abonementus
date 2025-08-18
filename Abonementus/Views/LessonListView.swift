@@ -70,30 +70,11 @@ struct LessonListView: View {
                     Section(header: HStack {
                         Text("Завершенные уроки")
                         Spacer()
-                        Text("Нажмите для редактирования времени")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
                     }) {
                         ForEach(filteredCompletedLessons, id: \.id) { lesson in
                             lessonRow(for: lesson)
                                 .background(Color.gray.opacity(0.1))
                                 .cornerRadius(6)
-                                .onTapGesture {
-                                    selectedLessonForEdit = lesson
-                                }
-                                .contentShape(Rectangle())
-                                .overlay(
-                                    HStack(spacing: 8) {
-                                        Spacer()
-                                        Image(systemName: "pencil.circle")
-                                            .foregroundColor(.blue)
-                                            .font(.system(size: 14))
-                                            .padding(6)
-                                            .background(Color.blue.opacity(0.2))
-                                            .clipShape(RoundedRectangle(cornerRadius: 6))
-                                    }
-                                    .padding(.trailing, 8)
-                                )
                         }
                     }
                 }
@@ -195,7 +176,9 @@ struct LessonListView: View {
             
             // Dates and subscription info
             VStack(alignment: .leading, spacing: 4) {
-                Text("Создан: \(lesson.createdAt.toString())")
+                if !lesson.isCompleted {
+                    Text("Создан: \(lesson.createdAt.toString())")
+                }
                 if let conductedAt = lesson.conductedAt {
                     Text("Проведен: \(conductedAt.toString())")
                 }
@@ -230,6 +213,20 @@ struct LessonListView: View {
                     .frame(width: 28, height: 28)
                     .padding(.trailing, 20)
             }
+
+            // Edit button (pencil) to open editor
+            Button(action: {
+                selectedLessonForEdit = lesson
+            }) {
+                Image(systemName: "pencil.circle")
+                    .foregroundColor(.blue)
+                    .font(.system(size: 14))
+                    .padding(6)
+                    .background(Color.blue.opacity(0.2))
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+            }
+            .buttonStyle(PlainButtonStyle())
+            .padding(.trailing, 8)
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 8)
