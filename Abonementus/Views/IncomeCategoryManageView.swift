@@ -7,6 +7,8 @@ struct IncomeCategoryManageView: View {
     let onClose: () -> Void
     
     @State private var newName: String = ""
+    @State private var showDeleteConfirmation = false
+    @State private var categoryIdToDelete: Int64? = nil
     
     var body: some View {
         VStack(spacing: 0) {
@@ -41,18 +43,34 @@ struct IncomeCategoryManageView: View {
             .padding(.horizontal, 20)
             .padding(.top)
             
+            // Create form
             Form {
                 Section(header: Text("Новая категория")) {
                     TextField("Название", text: $newName)
                 }
+            }
+            .padding(.horizontal, 20)
+
+            Divider()
+                .padding(.vertical, 8)
+
+            // Styled category list
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Существующие категории")
+                    .font(.headline)
+                    .padding(.horizontal, 20)
                 
-                Section(header: Text("Список категорий")) {
-                    List {
+                ScrollView {
+                    LazyVStack(spacing: 8) {
                         ForEach(categories, id: \.id) { cat in
                             HStack {
                                 Text(cat.name)
+                                    .font(.body)
                                 Spacer()
-                                Button(action: { onDelete(cat.id) }) {
+                                Button(action: {
+                                    categoryIdToDelete = cat.id
+                                    showDeleteConfirmation = true
+                                }) {
                                     Image(systemName: "trash")
                                         .foregroundColor(.red)
                                         .font(.system(size: 14))
@@ -62,14 +80,26 @@ struct IncomeCategoryManageView: View {
                                 }
                                 .buttonStyle(PlainButtonStyle())
                             }
+                            .padding(12)
+                            .background(Color.blue.opacity(0.2))
+                            .cornerRadius(8)
+                            .padding(.horizontal, 20)
                         }
                     }
-                    .frame(minHeight: 200)
+                    .padding(.vertical, 4)
                 }
             }
-            .padding(.horizontal, 20)
         }
         .frame(minWidth: 500, minHeight: 400)
+        .alert("Подтверждение удаления", isPresented: $showDeleteConfirmation) {
+            Button("Отмена", role: .cancel) { }
+            Button("Удалить", role: .destructive) {
+                if let id = categoryIdToDelete { onDelete(id) }
+                categoryIdToDelete = nil
+            }
+        } message: {
+            Text("Удалить категорию? Все связанные доп доходы будут удалены.")
+        }
     }
 }
 

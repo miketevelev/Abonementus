@@ -74,7 +74,7 @@ struct HistoryView: View {
                                         .fontWeight(.bold)
                                         .foregroundColor(.primary)
                                     Spacer()
-                                    Text("Основной: \(String(format: "%.2f", yearData.totalAmount)) руб. | Доп: \(String(format: "%.2f", yearData.totalExtraAmount)) руб.")
+                                    Text("Основной: \(String(format: "%.2f", yearData.totalAmount)) руб. | Доп: \(String(format: "%.2f", yearData.totalExtraAmount)) руб. | Общий: \(String(format: "%.2f", yearData.totalAmount + yearData.totalExtraAmount)) руб.")
                                         .font(.subheadline)
                                         .fontWeight(.medium)
                                         .foregroundColor(.secondary)
@@ -91,7 +91,7 @@ struct HistoryView: View {
                                                 .font(.subheadline)
                                                 .fontWeight(.medium)
                                             Spacer()
-                                            Text("Основной: \(String(format: "%.2f", monthData.amount)) руб. | Доп: \(String(format: "%.2f", monthData.extraAmount)) руб.")
+                                            Text("Основной: \(String(format: "%.2f", monthData.amount)) руб. | Доп: \(String(format: "%.2f", monthData.extraAmount)) руб. | Общий: \(String(format: "%.2f", monthData.amount + monthData.extraAmount)) руб.")
                                                 .font(.subheadline)
                                                 .fontWeight(.medium)
                                         }
