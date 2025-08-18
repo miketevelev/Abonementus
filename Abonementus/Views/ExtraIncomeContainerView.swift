@@ -30,7 +30,13 @@ struct ExtraIncomeContainerView: View {
                     showEdit = false
                 },
                 onCancel: { showEdit = false },
-                onCreateCategory: { showCategoryManage = true }
+                onCreateCategory: {
+                    // Close edit first, then open category manager
+                    showEdit = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                        showCategoryManage = true
+                    }
+                }
             )
         }
         .sheet(isPresented: $showCategoryManage) {
