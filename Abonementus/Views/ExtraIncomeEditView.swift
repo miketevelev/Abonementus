@@ -77,7 +77,9 @@ struct ExtraIncomeEditView: View {
                     
                     TextField("Сумма", text: $amountText)
                         .textFieldStyle(.roundedBorder)
+#if os(iOS)
                         .keyboardType(.decimalPad)
+#endif
                     
                     HStack {
                         Text("Дата получения")
