@@ -102,15 +102,14 @@ struct SubscriptionMainView: View {
                 }
                 .buttonStyle(YellowButtonStyle())
                 
-                Button(action: { showHistory = true }) {
-                    Label("Доходы", systemImage: "chart.line.uptrend.xyaxis")
+                Button(action: { showExtraIncome = true }) {
+                    Label("Доп", systemImage: "plus.rectangle.on.rectangle")
                         .padding(8)
                 }
                 .buttonStyle(BrownButtonStyle())
-
-                // Extra income button
-                Button(action: { showExtraIncome = true }) {
-                    Label("Доп", systemImage: "plus.rectangle.on.rectangle")
+                
+                Button(action: { showHistory = true }) {
+                    Label("Доходы", systemImage: "chart.line.uptrend.xyaxis")
                         .padding(8)
                 }
                 .buttonStyle(BrownButtonStyle())
