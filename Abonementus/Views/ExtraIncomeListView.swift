@@ -13,74 +13,89 @@ struct ExtraIncomeListView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Header
+            // Top bar 50px
             HStack {
-                Button(action: { presentationMode.wrappedValue.dismiss() }) {
+                Text("Доп доход")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                Spacer()
+                Button(action: {
+                    presentationMode.wrappedValue.dismiss()
+                }) {
                     Image(systemName: "xmark")
                         .font(.title2)
                         .foregroundColor(.secondary)
                 }
                 .buttonStyle(PlainButtonStyle())
-                
-                Spacer()
-                
-                VStack(spacing: 4) {
-                    Text("Доп доход")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                    
-                    HStack(spacing: 12) {
-                        if availableYears.count > 1 {
-                            Picker("Год", selection: $selectedYear) {
-                                ForEach(availableYears, id: \.self) { year in
-                                    Text(String(year)).tag(year)
-                                }
-                            }
-                            .pickerStyle(MenuPickerStyle())
-                            .frame(width: 100)
-                        }
-                        
-                        Picker("Месяц", selection: $selectedMonth) {
-                            Text("Все месяцы").tag(nil as Int?)
-                            ForEach(availableMonths, id: \.self) { month in
-                                Text(monthName(for: month)).tag(Optional(month))
+            }
+            .frame(height: 50)
+            .padding(.horizontal, 20)
+            .background(Color(.controlBackgroundColor))
+            .padding(.bottom, 10)
+            
+            // Content area with filters and list
+            VStack(spacing: 0) {
+                // Filters
+                HStack(spacing: 12) {
+                    if availableYears.count > 1 {
+                        Picker("Год", selection: $selectedYear) {
+                            ForEach(availableYears, id: \.self) { year in
+                                Text(String(year)).tag(year)
                             }
                         }
                         .pickerStyle(MenuPickerStyle())
-                        .frame(width: 140)
+                        .frame(width: 100)
                     }
+                    
+                    Picker("Месяц", selection: $selectedMonth) {
+                        Text("Все месяцы").tag(nil as Int?)
+                        ForEach(availableMonths, id: \.self) { month in
+                            Text(monthName(for: month)).tag(Optional(month))
+                        }
+                    }
+                    .pickerStyle(MenuPickerStyle())
+                    .frame(width: 140)
+                    
+                    Spacer()
                 }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 10)
                 
                 Spacer()
                 
+                // Records list
+                List {
+                    Section(header: HStack {
+                        Text("Записи")
+                        Spacer()
+                    }) {
+                        ForEach(filteredIncomes, id: \.id) { income in
+                            incomeRow(for: income)
+                                .background(Color.gray.opacity(0.1))
+                                .cornerRadius(6)
+                        }
+                    }
+                }
+                .padding(.horizontal, 20)
+                #if os(iOS)
+                .listStyle(.insetGrouped)
+                #else
+                .listStyle(.bordered(alternatesRowBackgrounds: true))
+                #endif
+            }
+            
+            // Bottom add button
+            HStack {
+                Spacer()
                 Button(action: onCreate) {
                     Label("Добавить", systemImage: "plus.circle")
                         .padding(8)
                 }
-                .buttonStyle(YellowButtonStyle())
+                .buttonStyle(GreenButtonStyle())
             }
             .padding(.horizontal, 20)
-            .padding(.top)
-            
-            // List
-            List {
-                Section(header: HStack {
-                    Text("Записи")
-                    Spacer()
-                }) {
-                    ForEach(filteredIncomes, id: \.id) { income in
-                        incomeRow(for: income)
-                            .background(Color.gray.opacity(0.1))
-                            .cornerRadius(6)
-                    }
-                }
-            }
-            .padding(.horizontal, 20)
-            #if os(iOS)
-            .listStyle(.insetGrouped)
-            #else
-            .listStyle(.automatic)
-            #endif
+            .padding(.top, 10)
+            .padding(.bottom, 20)
         }
         .frame(minWidth: 900, minHeight: 500)
     }

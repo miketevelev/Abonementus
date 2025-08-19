@@ -47,20 +47,22 @@ struct SubscriptionListView: View {
                         .frame(width: 100)
                     }
                     
-                    // Month filter (completed subscriptions months)
-                    Picker("Месяц", selection: $selectedMonth) {
-                        Text("Все месяцы").tag(nil as Int?)
-                        ForEach(availableMonths, id: \.self) { month in
-                            Text(monthName(for: month)).tag(Optional(month))
+                    // Month filter (only show if there are months for selected year)
+                    if !availableMonths.isEmpty {
+                        Picker("Месяц", selection: $selectedMonth) {
+                            Text("Все месяцы").tag(nil as Int?)
+                            ForEach(availableMonths, id: \.self) { month in
+                                Text(monthName(for: month)).tag(Optional(month))
+                            }
                         }
+                        .pickerStyle(MenuPickerStyle())
+                        .frame(width: 140)
                     }
-                    .pickerStyle(MenuPickerStyle())
-                    .frame(width: 140)
                     
                     // Client filter
                     Picker("Клиент", selection: $selectedClientId) {
                         Text("Все клиенты").tag(nil as Int64?)
-                        ForEach(clients.sorted { $0.fullName < $1.fullName }, id: \.id) { client in
+                        ForEach(availableClients.sorted { $0.fullName < $1.fullName }, id: \.id) { client in
                             Text(client.fullName).tag(Optional(client.id))
                         }
                     }
@@ -181,6 +183,35 @@ struct SubscriptionListView: View {
             9: "Сентябрь", 10: "Октябрь", 11: "Ноябрь", 12: "Декабрь"
         ]
         return monthNames[month] ?? String(month)
+    }
+    
+    private var availableClients: [Client] {
+        let calendar = Calendar.current
+        
+        // Get all subscriptions for the selected year and month
+        let relevantSubscriptions = subscriptions.filter { subscription in
+            let year = calendar.component(.year, from: subscription.createdAt)
+            guard year == selectedYear else { return false }
+            
+            if let month = selectedMonth {
+                // If month is selected, check closedAt for inactive subscriptions
+                if subscription.isActive {
+                    return false // Active subscriptions don't have closedAt
+                } else if let closedAt = subscription.closedAt {
+                    return calendar.component(.month, from: closedAt) == month
+                }
+                return false
+            } else {
+                // If no month selected, include all subscriptions for the year
+                return true
+            }
+        }
+        
+        // Get unique client IDs from relevant subscriptions
+        let relevantClientIds = Set(relevantSubscriptions.map { $0.clientId })
+        
+        // Return only clients that have relevant subscriptions
+        return clients.filter { relevantClientIds.contains($0.id) }
     }
     
     private func subscriptionRow(for subscription: Subscription) -> some View {

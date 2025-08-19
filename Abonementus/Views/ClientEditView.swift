@@ -70,6 +70,18 @@ struct ClientEditView: View {
             
             // Bottom actions
             HStack(spacing: 12) {
+                if client.id != 0 {
+                    Button(action: {
+                        showDeleteConfirmation = true
+                    }) {
+                        Label("Удалить", systemImage: "trash")
+                            .padding(8)
+                    }
+                    .buttonStyle(RedButtonStyle())
+                }
+                
+                Spacer()
+                
                 Button(action: {
                         // Validate form
                         guard !client.firstName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
@@ -96,17 +108,6 @@ struct ClientEditView: View {
                             .padding(8)
                     }
                     .buttonStyle(GreenButtonStyle())
-                    
-                    if client.id != 0 {
-                        Button(action: {
-                            showDeleteConfirmation = true
-                        }) {
-                            Label("Удалить", systemImage: "trash")
-                                .padding(8)
-                        }
-                        .buttonStyle(RedButtonStyle())
-                    }
-                Spacer()
             }
             .padding(.horizontal, 20)
             .padding(.top, 10)

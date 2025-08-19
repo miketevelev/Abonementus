@@ -61,7 +61,7 @@ struct LessonListView: View {
                     
                     Picker("Клиент", selection: $selectedClientId) {
                         Text("Все клиенты").tag(nil as Int64?)
-                        ForEach(clients.sorted { $0.fullName < $1.fullName }, id: \.id) { client in
+                        ForEach(availableClients.sorted { $0.fullName < $1.fullName }, id: \.id) { client in
                             Text(client.fullName).tag(Optional(client.id))
                         }
                     }
@@ -232,6 +232,40 @@ struct LessonListView: View {
             9: "Сентябрь", 10: "Октябрь", 11: "Ноябрь", 12: "Декабрь"
         ]
         return monthNames[month] ?? String(month)
+    }
+    
+    private var availableClients: [Client] {
+        let calendar = Calendar.current
+        
+        // Get all lessons for the selected year and month
+        let relevantLessons = lessons.filter { lesson in
+            let dateForFilter = lesson.conductedAt ?? lesson.createdAt
+            let year = calendar.component(.year, from: dateForFilter)
+            guard year == selectedYear else { return false }
+            
+            if let month = selectedMonth {
+                return calendar.component(.month, from: dateForFilter) == month
+            } else {
+                return true
+            }
+        }
+        
+        // Filter by lesson completion status based on checkbox
+        let filteredLessons = relevantLessons.filter { lesson in
+            if showAllLessonTypes {
+                // Show all lessons (both active and completed)
+                return true
+            } else {
+                // Show only completed lessons
+                return lesson.isCompleted
+            }
+        }
+        
+        // Get unique client IDs from relevant lessons
+        let relevantClientIds = Set(filteredLessons.map { $0.clientId })
+        
+        // Return only clients that have relevant lessons
+        return clients.filter { relevantClientIds.contains($0.id) }
     }
     
     private func lessonRow(for lesson: Lesson) -> some View {

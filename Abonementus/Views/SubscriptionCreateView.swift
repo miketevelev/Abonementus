@@ -114,7 +114,7 @@ struct SubscriptionCreateView: View {
                     Label("Создать", systemImage: "plus.circle")
                         .padding(8)
                 }
-                .buttonStyle(BlueButtonStyle())
+                .buttonStyle(GreenButtonStyle())
             }
             .padding(.horizontal, 20)
             .padding(.top, 10)
@@ -125,9 +125,7 @@ struct SubscriptionCreateView: View {
             Alert(title: Text("Ошибка"), message: Text(errorMessage), dismissButton: .default(Text("OK")))
         }
         .onAppear {
-            if let firstClient = clients.first {
-                selectedClientId = firstClient.id
-            }
+            // Don't auto-select any client, let user choose
         }
     }
     
@@ -163,7 +161,7 @@ struct SubscriptionCreateView: View {
     
     private func createSubscription() {
         guard selectedClientId != 0 else {
-            errorMessage = "Выберите клиента"
+            errorMessage = "Поле 'Клиент' обязательно для заполнения. Пожалуйста, выберите клиента из списка."
             showError = true
             return
         }
