@@ -30,6 +30,7 @@ struct SubscriptionCreateView: View {
             .frame(height: 50)
             .padding(.horizontal, 20)
             .background(Color(.controlBackgroundColor))
+            .padding(.bottom, 10)
             
             // Content
             Form {
@@ -104,6 +105,7 @@ struct SubscriptionCreateView: View {
                 }
             }
             .padding(.horizontal, 20)
+            .padding(.bottom, 10)
             
             // Bottom create button
             HStack {
@@ -115,7 +117,8 @@ struct SubscriptionCreateView: View {
                 .buttonStyle(BlueButtonStyle())
             }
             .padding(.horizontal, 20)
-            .padding(.vertical, 12)
+            .padding(.top, 10)
+            .padding(.bottom, 20)
         }
         .frame(minWidth: 450, minHeight: 420)
         .alert(isPresented: $showError) {
