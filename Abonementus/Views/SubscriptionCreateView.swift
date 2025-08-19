@@ -13,35 +13,25 @@ struct SubscriptionCreateView: View {
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
-        VStack(spacing: 16) {
-            // Header
+        VStack(spacing: 0) {
+            // Top bar 50px
             HStack {
-                Button(action: {
-                    presentationMode.wrappedValue.dismiss()
-                }) {
+                Text("Создание абонемента")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                Spacer()
+                Button(action: { presentationMode.wrappedValue.dismiss() }) {
                     Image(systemName: "xmark")
                         .font(.title2)
                         .foregroundColor(.secondary)
                 }
                 .buttonStyle(PlainButtonStyle())
-                
-                Spacer()
-                
-                Text("Создание абонемента")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                
-                Spacer()
-                
-                Button(action: createSubscription) {
-                    Label("Создать", systemImage: "plus.circle")
-                        .padding(8)
-                }
-                .buttonStyle(BlueButtonStyle())
             }
+            .frame(height: 50)
             .padding(.horizontal, 20)
+            .background(Color(.controlBackgroundColor))
             
-            // Form
+            // Content
             Form {
                 Section(header: Text("Основная информация")) {
                     Picker("Клиент", selection: $selectedClientId) {
@@ -114,8 +104,20 @@ struct SubscriptionCreateView: View {
                 }
             }
             .padding(.horizontal, 20)
+            
+            // Bottom create button
+            HStack {
+                Spacer()
+                Button(action: createSubscription) {
+                    Label("Создать", systemImage: "plus.circle")
+                        .padding(8)
+                }
+                .buttonStyle(BlueButtonStyle())
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 12)
         }
-        .frame(minWidth: 450, minHeight: 400)
+        .frame(minWidth: 450, minHeight: 420)
         .alert(isPresented: $showError) {
             Alert(title: Text("Ошибка"), message: Text(errorMessage), dismissButton: .default(Text("OK")))
         }
