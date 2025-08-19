@@ -11,6 +11,7 @@ struct LessonListView: View {
     @State private var selectedMonth: Int? = nil
     @State private var selectedClientId: Int64? = nil
     @State private var selectedLessonType: String? = nil
+    @State private var showAllLessonTypes: Bool = false
     @State private var selectedLessonForEdit: Lesson?
     @State private var showDeleteConfirmation = false
     @State private var lessonToDelete: Int64?
@@ -74,6 +75,12 @@ struct LessonListView: View {
                             }
                             .pickerStyle(MenuPickerStyle())
                             .frame(width: 230)
+
+                            HStack(spacing: 8) {
+                                Text("Все")
+                                Toggle("Все", isOn: $showAllLessonTypes)
+                                    .labelsHidden()
+                            }
                         }
                     }
                     
@@ -91,12 +98,14 @@ struct LessonListView: View {
                 
                 // Lessons list
                 List {
-                    // Active lessons
-                    Section(header: Text("Активные уроки")) {
-                        ForEach(filteredActiveLessons, id: \.id) { lesson in
-                            lessonRow(for: lesson)
-                                .background(Color.yellow.opacity(0.1))
-                                .cornerRadius(6)
+                    // Active lessons (only when toggle is on)
+                    if showAllLessonTypes {
+                        Section(header: Text("Активные уроки")) {
+                            ForEach(filteredActiveLessons, id: \.id) { lesson in
+                                lessonRow(for: lesson)
+                                    .background(Color.yellow.opacity(0.1))
+                                    .cornerRadius(6)
+                            }
                         }
                     }
                     
