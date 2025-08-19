@@ -12,8 +12,12 @@ struct ClientEditView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Header
+            // Top bar 50px
             HStack {
+                Text(client.id == 0 ? "Создание клиента" : "Редактирование клиента")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                Spacer()
                 Button(action: {
                     presentationMode.wrappedValue.dismiss()
                 }) {
@@ -22,56 +26,11 @@ struct ClientEditView: View {
                         .foregroundColor(.secondary)
                 }
                 .buttonStyle(PlainButtonStyle())
-                
-                Spacer()
-                
-                Text(client.id == 0 ? "Создание" : "Редактирование")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                
-                Spacer()
-                
-                HStack(spacing: 12) {
-                    Button(action: {
-                        // Validate form
-                        guard !client.firstName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-                            errorMessage = "Имя клиента обязательно для заполнения"
-                            showError = true
-                            return
-                        }
-                        
-                        let updatedClient = Client(
-                            id: client.id,
-                            firstName: client.firstName.trimmingCharacters(in: .whitespacesAndNewlines),
-                            lastName: client.lastName?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false ? client.lastName?.trimmingCharacters(in: .whitespacesAndNewlines) : nil,
-                            phone: client.phone?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false ? client.phone?.trimmingCharacters(in: .whitespacesAndNewlines) : nil,
-                            telegram: client.telegram?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false ? client.telegram?.trimmingCharacters(in: .whitespacesAndNewlines) : nil,
-                            email: client.email?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false ? client.email?.trimmingCharacters(in: .whitespacesAndNewlines) : nil,
-                            additionalInfo: client.additionalInfo?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false ? client.additionalInfo?.trimmingCharacters(in: .whitespacesAndNewlines) : nil,
-                            createdAt: client.createdAt,
-                            updatedAt: Date()
-                        )
-                        onSave(updatedClient)
-                        presentationMode.wrappedValue.dismiss()
-                    }) {
-                        Label("Сохранить", systemImage: "checkmark.circle")
-                            .padding(8)
-                    }
-                    .buttonStyle(GreenButtonStyle())
-                    
-                    if client.id != 0 {
-                        Button(action: {
-                            showDeleteConfirmation = true
-                        }) {
-                            Label("Удалить", systemImage: "trash")
-                                .padding(8)
-                        }
-                        .buttonStyle(RedButtonStyle())
-                    }
-                }
             }
+            .frame(height: 50)
             .padding(.horizontal, 20)
-            .padding(.top)
+            .background(Color(.controlBackgroundColor))
+            .padding(.bottom, 10)
             
             // Form
             Form {
@@ -107,6 +66,51 @@ struct ClientEditView: View {
                 }
             }
             .padding(.horizontal, 20)
+            .padding(.bottom, 10)
+            
+            // Bottom actions
+            HStack(spacing: 12) {
+                Button(action: {
+                        // Validate form
+                        guard !client.firstName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                            errorMessage = "Имя клиента обязательно для заполнения"
+                            showError = true
+                            return
+                        }
+                        
+                        let updatedClient = Client(
+                            id: client.id,
+                            firstName: client.firstName.trimmingCharacters(in: .whitespacesAndNewlines),
+                            lastName: client.lastName?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false ? client.lastName?.trimmingCharacters(in: .whitespacesAndNewlines) : nil,
+                            phone: client.phone?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false ? client.phone?.trimmingCharacters(in: .whitespacesAndNewlines) : nil,
+                            telegram: client.telegram?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false ? client.telegram?.trimmingCharacters(in: .whitespacesAndNewlines) : nil,
+                            email: client.email?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false ? client.email?.trimmingCharacters(in: .whitespacesAndNewlines) : nil,
+                            additionalInfo: client.additionalInfo?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false ? client.additionalInfo?.trimmingCharacters(in: .whitespacesAndNewlines) : nil,
+                            createdAt: client.createdAt,
+                            updatedAt: Date()
+                        )
+                        onSave(updatedClient)
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Label("Сохранить", systemImage: "checkmark.circle")
+                            .padding(8)
+                    }
+                    .buttonStyle(GreenButtonStyle())
+                    
+                    if client.id != 0 {
+                        Button(action: {
+                            showDeleteConfirmation = true
+                        }) {
+                            Label("Удалить", systemImage: "trash")
+                                .padding(8)
+                        }
+                        .buttonStyle(RedButtonStyle())
+                    }
+                Spacer()
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 10)
+            .padding(.bottom, 20)
         }
         .frame(minWidth: 500, minHeight: 200)
         .alert(isPresented: $showError) {

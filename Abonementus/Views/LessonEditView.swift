@@ -21,35 +21,24 @@ struct LessonEditView: View {
     }
     
     var body: some View {
-        VStack(spacing: 20) {
-            // Header
+        VStack(spacing: 0) {
+            // Top bar 50px
             HStack {
-                Button(action: {
-                    onCancel()
-                }) {
+                Text("Редактирование урока")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                Spacer()
+                Button(action: { onCancel() }) {
                     Image(systemName: "xmark")
                         .font(.title2)
                         .foregroundColor(.secondary)
                 }
                 .buttonStyle(PlainButtonStyle())
-                
-                Spacer()
-                
-                Text("Редактирование урока")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                
-                Spacer()
-                
-                // Empty space to balance the layout
-                Button(action: {}) {
-                    Image(systemName: "")
-                        .font(.title2)
-                }
-                .opacity(0)
             }
+            .frame(height: 50)
             .padding(.horizontal, 20)
-            .padding(.top)
+            .background(Color(.controlBackgroundColor))
+            .padding(.bottom, 10)
             
             // Content
             Form {
@@ -108,9 +97,11 @@ struct LessonEditView: View {
                 }
             }
             .padding(.horizontal, 20)
+            .padding(.bottom, 10)
             
-            // Buttons
+            // Bottom save button
             HStack(spacing: 12) {
+                Spacer()
                 Button(action: { saveChanges() }) {
                     Label("Сохранить", systemImage: "checkmark.circle")
                         .padding(8)
@@ -118,7 +109,8 @@ struct LessonEditView: View {
                 .buttonStyle(GreenButtonStyle())
             }
             .padding(.horizontal, 20)
-            .padding(.bottom)
+            .padding(.top, 10)
+            .padding(.bottom, 20)
         }
         .frame(minWidth: 500, minHeight: 300)
         .alert(isPresented: $showError) {

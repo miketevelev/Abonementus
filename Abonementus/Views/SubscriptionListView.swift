@@ -15,8 +15,12 @@ struct SubscriptionListView: View {
     
     var body: some View {
             VStack(spacing: 0) {
-                // Header
+                // Top bar 50px
                 HStack {
+                    Text("Все абонементы")
+                        .font(.headline)
+                        .fontWeight(.bold)
+                    Spacer()
                     Button(action: {
                         presentationMode.wrappedValue.dismiss()
                     }) {
@@ -25,58 +29,47 @@ struct SubscriptionListView: View {
                             .foregroundColor(.secondary)
                     }
                     .buttonStyle(PlainButtonStyle())
+                }
+                .frame(height: 50)
+                .padding(.horizontal, 20)
+                .background(Color(.controlBackgroundColor))
+                .padding(.bottom, 10)
+
+                // Filters row
+                HStack(spacing: 12) {
+                    if availableYears.count > 1 {
+                        Picker("Год", selection: $selectedYear) {
+                            ForEach(availableYears, id: \.self) { year in
+                                Text(String(year)).tag(year)
+                            }
+                        }
+                        .pickerStyle(MenuPickerStyle())
+                        .frame(width: 100)
+                    }
                     
-                    Spacer()
-                    
-                    VStack(spacing: 4) {
-                        Text("Все абонементы")
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                        
-                        HStack(spacing: 12) {
-                            if availableYears.count > 1 {
-                                Picker("Год", selection: $selectedYear) {
-                                    ForEach(availableYears, id: \.self) { year in
-                                        Text(String(year)).tag(year)
-                                    }
-                                }
-                                .pickerStyle(MenuPickerStyle())
-                                .frame(width: 100)
-                            }
-                            
-                            // Month filter (completed subscriptions months)
-                            Picker("Месяц", selection: $selectedMonth) {
-                                Text("Все месяцы").tag(nil as Int?)
-                                ForEach(availableMonths, id: \.self) { month in
-                                    Text(monthName(for: month)).tag(Optional(month))
-                                }
-                            }
-                            .pickerStyle(MenuPickerStyle())
-                            .frame(width: 140)
-                            
-                            // Client filter
-                            Picker("Клиент", selection: $selectedClientId) {
-                                Text("Все клиенты").tag(nil as Int64?)
-                                ForEach(clients.sorted { $0.fullName < $1.fullName }, id: \.id) { client in
-                                    Text(client.fullName).tag(Optional(client.id))
-                                }
-                            }
-                            .pickerStyle(MenuPickerStyle())
-                            .frame(width: 220)
+                    // Month filter (completed subscriptions months)
+                    Picker("Месяц", selection: $selectedMonth) {
+                        Text("Все месяцы").tag(nil as Int?)
+                        ForEach(availableMonths, id: \.self) { month in
+                            Text(monthName(for: month)).tag(Optional(month))
                         }
                     }
+                    .pickerStyle(MenuPickerStyle())
+                    .frame(width: 140)
                     
-                    Spacer()
-                    
-                    // Empty space to balance the layout
-                    Button(action: {}) {
-                        Image(systemName: "")
-                            .font(.title2)
+                    // Client filter
+                    Picker("Клиент", selection: $selectedClientId) {
+                        Text("Все клиенты").tag(nil as Int64?)
+                        ForEach(clients.sorted { $0.fullName < $1.fullName }, id: \.id) { client in
+                            Text(client.fullName).tag(Optional(client.id))
+                        }
                     }
-                    .opacity(0)
+                    .pickerStyle(MenuPickerStyle())
+                    .frame(width: 220)
+                    Spacer()
                 }
                 .padding(.horizontal, 20)
-                .padding(.top)
+                .padding(.bottom, 10)
                 
                 Spacer()
                 

@@ -18,8 +18,12 @@ struct LessonListView: View {
     
     var body: some View {
             VStack(spacing: 0) {
-                // Header
+                // Top bar 50px
                 HStack {
+                    Text("Все уроки")
+                        .font(.headline)
+                        .fontWeight(.bold)
+                    Spacer()
                     Button(action: {
                         presentationMode.wrappedValue.dismiss()
                     }) {
@@ -28,73 +32,59 @@ struct LessonListView: View {
                             .foregroundColor(.secondary)
                     }
                     .buttonStyle(PlainButtonStyle())
-                    
-                    Spacer()
-                    
-                    VStack(spacing: 4) {
-                        Text("Все уроки")
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                        
-                        HStack(spacing: 12) {
-                            if availableYears.count > 1 {
-                                Picker("Год", selection: $selectedYear) {
-                                    ForEach(availableYears, id: \.self) { year in
-                                        Text(String(year)).tag(year)
-                                    }
-                                }
-                                .pickerStyle(MenuPickerStyle())
-                                .frame(width: 100)
-                            }
-                            
-                            // Month filter (always visible)
-                            Picker("Месяц", selection: $selectedMonth) {
-                                Text("Все месяцы").tag(nil as Int?)
-                                ForEach(availableMonths, id: \.self) { month in
-                                    Text(monthName(for: month)).tag(Optional(month))
-                                }
-                            }
-                            .pickerStyle(MenuPickerStyle())
-                            .frame(width: 140)
-                            
-                            // Client filter (always visible)
-                            Picker("Клиент", selection: $selectedClientId) {
-                                Text("Все клиенты").tag(nil as Int64?)
-                                ForEach(clients.sorted { $0.fullName < $1.fullName }, id: \.id) { client in
-                                    Text(client.fullName).tag(Optional(client.id))
-                                }
-                            }
-                            .pickerStyle(MenuPickerStyle())
-                            .frame(width: 220)
-                            
-                            // Lesson type filter
-                            Picker("Тип урока", selection: $selectedLessonType) {
-                                Text("Все типы").tag(nil as String?)
-                                Text("Абонементный").tag(Optional("subscription"))
-                                Text("Разовый").tag(Optional("single"))
-                            }
-                            .pickerStyle(MenuPickerStyle())
-                            .frame(width: 230)
+                }
+                .frame(height: 50)
+                .padding(.horizontal, 20)
+                .background(Color(.controlBackgroundColor))
+                .padding(.bottom, 10)
 
-                            HStack(spacing: 8) {
-                                Text("Все")
-                                Toggle("Все", isOn: $showAllLessonTypes)
-                                    .labelsHidden()
+                // Filters row
+                HStack(spacing: 12) {
+                    if availableYears.count > 1 {
+                        Picker("Год", selection: $selectedYear) {
+                            ForEach(availableYears, id: \.self) { year in
+                                Text(String(year)).tag(year)
                             }
                         }
+                        .pickerStyle(MenuPickerStyle())
+                        .frame(width: 100)
                     }
                     
+                    Picker("Месяц", selection: $selectedMonth) {
+                        Text("Все месяцы").tag(nil as Int?)
+                        ForEach(availableMonths, id: \.self) { month in
+                            Text(monthName(for: month)).tag(Optional(month))
+                        }
+                    }
+                    .pickerStyle(MenuPickerStyle())
+                    .frame(width: 140)
+                    
+                    Picker("Клиент", selection: $selectedClientId) {
+                        Text("Все клиенты").tag(nil as Int64?)
+                        ForEach(clients.sorted { $0.fullName < $1.fullName }, id: \.id) { client in
+                            Text(client.fullName).tag(Optional(client.id))
+                        }
+                    }
+                    .pickerStyle(MenuPickerStyle())
+                    .frame(width: 220)
+                    
+                    Picker("Тип урока", selection: $selectedLessonType) {
+                        Text("Все типы").tag(nil as String?)
+                        Text("Абонементный").tag(Optional("subscription"))
+                        Text("Разовый").tag(Optional("single"))
+                    }
+                    .pickerStyle(MenuPickerStyle())
+                    .frame(width: 230)
+                    
+                    HStack(spacing: 8) {
+                        Text("Все")
+                        Toggle("Все", isOn: $showAllLessonTypes)
+                            .labelsHidden()
+                    }
                     Spacer()
-                    
-                    // Empty space to balance the layout
-                    Button(action: {}) {
-                        Image(systemName: "")
-                            .font(.title2)
-                    }
-                    .opacity(0)
                 }
                 .padding(.horizontal, 20)
-                .padding(.top)
+                .padding(.bottom, 10)
                 
                 // Lessons list
                 List {

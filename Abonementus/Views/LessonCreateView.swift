@@ -12,35 +12,26 @@ struct LessonCreateView: View {
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
-        VStack(spacing: 16) {
-            // Header
+        VStack(spacing: 0) {
+            // Top bar 50px
             HStack {
-                Button(action: {
-                    presentationMode.wrappedValue.dismiss()
-                }) {
+                Text("Создание урока")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                Spacer()
+                Button(action: { presentationMode.wrappedValue.dismiss() }) {
                     Image(systemName: "xmark")
                         .font(.title2)
                         .foregroundColor(.secondary)
                 }
                 .buttonStyle(PlainButtonStyle())
-                
-                Spacer()
-                
-                Text("Создание урока")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                
-                Spacer()
-                
-                Button(action: saveLesson) {
-                    Label("Сохранить", systemImage: "checkmark.circle")
-                        .padding(8)
-                }
-                .buttonStyle(BlueButtonStyle())
             }
+            .frame(height: 50)
             .padding(.horizontal, 20)
+            .background(Color(.controlBackgroundColor))
+            .padding(.bottom, 10)
             
-            // Form
+            // Content
             Form {
                 Section(header: Text("Основная информация")) {
                     Picker("Клиент", selection: $selectedClientId) {
@@ -80,8 +71,22 @@ struct LessonCreateView: View {
                 }
             }
             .padding(.horizontal, 20)
+            .padding(.bottom, 10)
+            
+            // Bottom save button
+            HStack {
+                Spacer()
+                Button(action: saveLesson) {
+                    Label("Сохранить", systemImage: "checkmark.circle")
+                        .padding(8)
+                }
+                .buttonStyle(BlueButtonStyle())
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 10)
+            .padding(.bottom, 20)
         }
-        .frame(minWidth: 400, minHeight: 350)
+        .frame(minWidth: 400, minHeight: 360)
         .alert(isPresented: $showError) {
             Alert(title: Text("Ошибка"), message: Text(errorMessage), dismissButton: .default(Text("OK")))
         }

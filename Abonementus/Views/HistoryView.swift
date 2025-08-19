@@ -9,8 +9,12 @@ struct HistoryView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Header
+            // Top bar 50px
             HStack {
+                Text("История доходов")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                Spacer()
                 Button(action: {
                     presentationMode.wrappedValue.dismiss()
                 }) {
@@ -19,24 +23,11 @@ struct HistoryView: View {
                         .foregroundColor(.secondary)
                 }
                 .buttonStyle(PlainButtonStyle())
-                
-                Spacer()
-                
-                Text("История доходов")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                
-                Spacer()
-                
-                // Empty space to balance the layout
-                Button(action: {}) {
-                    Image(systemName: "")
-                        .font(.title2)
-                }
-                .opacity(0)
             }
+            .frame(height: 50)
             .padding(.horizontal, 20)
-            .padding(.top)
+            .background(Color(.controlBackgroundColor))
+            .padding(.bottom, 10)
             
             Spacer()
             

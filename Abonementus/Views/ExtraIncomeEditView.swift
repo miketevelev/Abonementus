@@ -25,31 +25,23 @@ struct ExtraIncomeEditView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Header
+            // Top bar 50px
             HStack {
+                Text(income == nil ? "Создание доп дохода" : "Редактирование доп дохода")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                Spacer()
                 Button(action: onCancel) {
                     Image(systemName: "xmark")
                         .font(.title2)
                         .foregroundColor(.secondary)
                 }
                 .buttonStyle(PlainButtonStyle())
-                
-                Spacer()
-                
-                Text(income == nil ? "Создание доп дохода" : "Редактирование доп дохода")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                
-                Spacer()
-                
-                Button(action: save) {
-                    Label("Сохранить", systemImage: "checkmark.circle")
-                        .padding(8)
-                }
-                .buttonStyle(GreenButtonStyle())
             }
+            .frame(height: 50)
             .padding(.horizontal, 20)
-            .padding(.top)
+            .background(Color(.controlBackgroundColor))
+            .padding(.bottom, 10)
             
             Form {
                 Section(header: Text("Данные дохода")) {
@@ -90,6 +82,20 @@ struct ExtraIncomeEditView: View {
                 }
             }
             .padding(.horizontal, 20)
+            .padding(.bottom, 10)
+            
+            // Bottom save
+            HStack {
+                Spacer()
+                Button(action: save) {
+                    Label("Сохранить", systemImage: "checkmark.circle")
+                        .padding(8)
+                }
+                .buttonStyle(GreenButtonStyle())
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 10)
+            .padding(.bottom, 20)
         }
         .frame(minWidth: 500, minHeight: 280)
     }
