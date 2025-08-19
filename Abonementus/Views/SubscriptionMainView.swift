@@ -7,6 +7,8 @@ struct SubscriptionMainView: View {
     let completedAmount: Double
     let pendingAmount: Double
     let extraAmount: Double
+    let filteredClient: Client?
+    let onClearFilter: () -> Void
     
     @Binding var showSubscriptionCreate: Bool
     @Binding var showLessonCreate: Bool
@@ -31,10 +33,41 @@ struct SubscriptionMainView: View {
             // Amount indicators
             amountIndicatorsView
             
+            // Filter info if client is selected
+            if let filteredClient = filteredClient {
+                filterInfoView(for: filteredClient)
+            }
+            
             // Subscriptions list
             subscriptionsListView
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    
+    private func filterInfoView(for client: Client) -> some View {
+        HStack {
+            Text("Фильтрация по клиенту: \(client.fullName)")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            
+            Spacer()
+            
+            Button(action: onClearFilter) {
+                Image(systemName: "xmark.circle")
+                    .foregroundColor(.red)
+                    .font(.system(size: 14))
+                    .padding(6)
+                    .background(Color.red.opacity(0.2))
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+            }
+            .buttonStyle(PlainButtonStyle())
+        }
+        .padding(.horizontal, 15)
+        .padding(.vertical, 8)
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(6)
+        .padding(.horizontal)
+        .padding(.bottom, 15)
     }
     
     private var headerView: some View {
@@ -409,6 +442,8 @@ struct SubscriptionMainView_Previews: PreviewProvider {
             completedAmount: 1500,
             pendingAmount: 6500,
             extraAmount: 0,
+            filteredClient: nil,
+            onClearFilter: {},
             showSubscriptionCreate: .constant(false),
             showLessonCreate: .constant(false),
             showAllSubscriptions: .constant(false),

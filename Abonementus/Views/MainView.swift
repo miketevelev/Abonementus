@@ -10,6 +10,7 @@ struct MainView: SwiftUI.View {
     
     // State variables
     @State private var selectedClient: Client?
+    @State private var filteredClient: Client?
     @State private var showSubscriptionCreate = false
     @State private var showLessonCreate = false
     @State private var showAllSubscriptions = false
@@ -22,7 +23,8 @@ struct MainView: SwiftUI.View {
             // Left side - Clients list (20% width)
             ClientListView(
                 clients: clientVM.clients,
-                selectedClient: $selectedClient
+                selectedClient: $selectedClient,
+                filteredClient: $filteredClient
             )
             .frame(width: 250)
             .background(Color(.windowBackgroundColor))
@@ -83,7 +85,9 @@ struct MainView: SwiftUI.View {
                     } else {
                         // Show normal subscription view
                         SubscriptionMainView(
-                            subscriptions: subscriptionVM.activeSubscriptions,
+                            subscriptions: filteredClient != nil ? 
+                                subscriptionVM.activeSubscriptions.filter { $0.clientId == filteredClient!.id } :
+                                subscriptionVM.activeSubscriptions,
                             clients: clientVM.clients,
                             getLessons: { subscriptionId in
                                 subscriptionVM.getLessons(for: subscriptionId)
@@ -91,6 +95,10 @@ struct MainView: SwiftUI.View {
                             completedAmount: lessonVM.calculateCompletedAmount(),
                             pendingAmount: lessonVM.calculatePendingAmount(),
                             extraAmount: extraIncomeVM.calculateExtraAmountForCurrentMonth(),
+                            filteredClient: filteredClient,
+                            onClearFilter: {
+                                filteredClient = nil
+                            },
                             showSubscriptionCreate: $showSubscriptionCreate,
                             showLessonCreate: $showLessonCreate,
                             showAllSubscriptions: $showAllSubscriptions,

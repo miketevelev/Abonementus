@@ -3,6 +3,7 @@ import SwiftUI
 struct ClientListView: View {
     let clients: [Client]
     @Binding var selectedClient: Client?
+    @Binding var filteredClient: Client?
     
     var body: some View {
         VStack(spacing: 0) {
@@ -65,12 +66,23 @@ struct ClientListView: View {
                 ScrollView {
                     LazyVStack(spacing: 0) {
                         ForEach(clients.sorted(by: { $0.fullName < $1.fullName }), id: \.id) { client in
-                            ClientRow(client: client)
-                                .frame(height: 50)
-                                .contentShape(Rectangle())
-                                .onTapGesture {
+                            ClientRow(
+                                client: client,
+                                isFiltered: filteredClient?.id == client.id,
+                                onTap: {
+                                    if filteredClient?.id == client.id {
+                                        // Toggle filter off
+                                        filteredClient = nil
+                                    } else {
+                                        // Set as filtered client
+                                        filteredClient = client
+                                    }
+                                },
+                                onEdit: {
                                     selectedClient = client
                                 }
+                            )
+                            .frame(height: 50)
                             Divider()
                         }
                     }
@@ -83,6 +95,9 @@ struct ClientListView: View {
 
 struct ClientRow: View {
     let client: Client
+    let isFiltered: Bool
+    let onTap: () -> Void
+    let onEdit: () -> Void
     
     var body: some View {
         HStack {
@@ -90,16 +105,34 @@ struct ClientRow: View {
                 Text(client.fullName)
                     .font(.headline)
                     .fontWeight(.medium)
+                    .foregroundColor(isFiltered ? .white : .primary)
                 
                 if let phone = client.phone {
                     Text(phone)
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(isFiltered ? .white.opacity(0.8) : .secondary)
                 }
             }
+            
             Spacer()
+            
+            // Edit button
+            Button(action: onEdit) {
+                Image(systemName: "pencil.circle")
+                    .foregroundColor(isFiltered ? .white : .blue)
+                    .font(.system(size: 14))
+                    .padding(6)
+                    .background(isFiltered ? Color.white.opacity(0.2) : Color.blue.opacity(0.2))
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+            }
+            .buttonStyle(PlainButtonStyle())
         }
         .padding(.horizontal)
         .padding(.vertical, 8)
+        .background(isFiltered ? Color.blue : Color.clear)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            onTap()
+        }
     }
 }
